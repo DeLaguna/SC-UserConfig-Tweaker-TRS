@@ -1,5 +1,5 @@
-﻿# Star Citizen User.cfg Optimizer
-# Version: 2024.06.09-0424-Alpha
+# Star Citizen User.cfg Optimizer
+# Version: 2024.06.10-0445-Alpha
 # Created by TheRealSarcasmO
 # https://linktr.ee/TheRealSarcasmO
 
@@ -15,10 +15,10 @@
 
 ##############################################################################################################################
 # URL of the raw script on GitHub
-$scriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1"
+$scriptUrl = "https://github.com/DeLaguna/SC-UserConfig-Tweaker-TRS/raw/main/SC-UserConfig-Tweaker-TRS.ps1"
 
 # Path to the local script
-$localScriptPath = "C:\Path\to\your\local\script.ps1"
+$localScriptPath = "$PSScriptRoot\SC-UserConfig-Tweaker-TRS.ps1"
 
 # Function to get the version of a script
 function Get-ScriptVersion {
@@ -49,8 +49,8 @@ if ($githubVersion -gt $localVersion) {
     Write-Output "A new version of the script is available on GitHub."
 
     # Ask the user if they want to update
-    $choice = Read-Host "Do you want to update to the new version? (yes/no)"
-    if ($choice -eq "yes") {
+    $choice = Read-Host "Do you want to update to the new version $githubVersion ? From Old version $localVersion. (y/n)"
+    if ($choice -eq "y") {
         # Backup the local script
         Copy-Item -Path $localScriptPath -Destination "$localScriptPath.bak"
 
@@ -62,10 +62,10 @@ if ($githubVersion -gt $localVersion) {
         Write-Output "Continuing with the local version of the script."
     }
 } else {
-    Write-Output "You are running the latest version of the script."
+    Write-Output "You are running the latest version ($localVersion) of the script."
 }
 ##############################################################################################################################
-
+Write-Output "==============================================================================="
 
 Write-Host @"
 ===============================================================================
