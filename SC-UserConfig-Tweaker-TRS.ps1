@@ -1,5 +1,5 @@
 # Star Citizen User.cfg Optimizer
-# Version: 2024.06.10-0543-Alpha
+# Version: 2024.06.10-0608-Alpha
 # Created by TheRealSarcasmO
 # https://linktr.ee/TheRealSarcasmO
 
@@ -296,13 +296,13 @@ function Implement-SystemTweaks {
     # Create a new form
     $form = New-Object System.Windows.Forms.Form
     $form.Text = 'System Tweaks'
-    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.Size = New-Object System.Drawing.Size(500,150)
     $form.StartPosition = 'CenterScreen'
 
     # Create a label
     $label = New-Object System.Windows.Forms.Label
     $label.Location = New-Object System.Drawing.Point(10,10)
-    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Size = New-Object System.Drawing.Size(450,30)
     $label.Text = 'Do you want to implement system tweaks for Star Citizen?'
     $form.Controls.Add($label)
 
@@ -339,9 +339,6 @@ function Implement-SystemTweaks {
         Write-Host "No system tweaks have been made."
     }
 }
-
-# Call the function to prompt the user
-Implement-SystemTweaks
 
 
 
@@ -424,8 +421,8 @@ function Get-SystemRAM {
     }
 }
 
-# Call the function to prompt the user
-$selectedRAM = Get-SystemRAM
+
+
 if ($selectedRAM -ne $null) {
     Write-Host "Selected RAM option: $selectedRAM MB"
 } else {
@@ -543,14 +540,11 @@ function Get-VideoCardMemory {
     return $videoCardInfo
 }
 
-# Call the function to prompt the user
-$videoCardDetails = Get-VideoCardMemory
 if ($videoCardDetails -ne $null) {
     Write-Host "Selected VRAM size for $($videoCardDetails.Model): $($videoCardDetails.'Selected VRAM, MB') MB"
 } else {
     Write-Host "No VRAM size was selected."
 }
-
 
 # Function to get the maximum refresh rate of the fastest monitor
 function Get-MaxRefreshRate {
@@ -635,8 +629,7 @@ function Get-FPSDisplayPreference {
     }
 }
 
-# Call the function to prompt the user
-$displayPreferenceIndex = Get-FPSDisplayPreference
+
 if ($displayPreferenceIndex -ne $null) {
     Write-Host "Selected FPS display preference: $($displayInfoChoices[$displayPreferenceIndex])"
 } else {
@@ -687,18 +680,18 @@ function Get-displaySessionInfoChoice {
 
 # Call the function to prompt the user
 $displaySessionInfoChoice = Get-displaySessionInfoChoice
+
 if ($displaySessionInfoChoice -eq 1) {
     Write-Host "QR code will be shown."
 } else {
     Write-Host "QR code will be hidden."
 }
 
-# Function to ask the user for their graphics quality preference
 function Get-GraphicsQualityPreference {
     # Create a new form
     $form = New-Object System.Windows.Forms.Form
     $form.Text = 'Graphics Quality'
-    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.Size = New-Object System.Drawing.Size(300,300) # Adjusted for radio buttons
     $form.StartPosition = 'CenterScreen'
 
     # Create a label
@@ -708,21 +701,28 @@ function Get-GraphicsQualityPreference {
     $label.Text = 'Select the graphics quality setting for your system:'
     $form.Controls.Add($label)
 
-    # Create a combo box for graphics quality options
-    $comboBox = New-Object System.Windows.Forms.ComboBox
-    $comboBox.Location = New-Object System.Drawing.Point(10,40)
-    $comboBox.Size = New-Object System.Drawing.Size(260,21)
-    $comboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
+    # Define the graphics quality choices
     $graphicsQualityChoices = @("Low", "Medium", "High", "Very High")
+
+    # Create radio buttons for each choice
+    $y = 40 # Starting Y position for the first radio button
+    $radioButtons = New-Object System.Collections.ArrayList
     foreach ($choice in $graphicsQualityChoices) {
-        $comboBox.Items.Add($choice)
+        $radioButton = New-Object System.Windows.Forms.RadioButton
+        $radioButton.Location = New-Object System.Drawing.Point(10, $y)
+        $radioButton.Size = New-Object System.Drawing.Size(260,20)
+        $radioButton.Text = $choice
+        $form.Controls.Add($radioButton)
+        $radioButtons.Add($radioButton) | Out-Null
+        $y += 30 # Increment Y position for the next radio button
     }
-    $comboBox.SelectedIndex = 2 # Default selection is "High"
-    $form.Controls.Add($comboBox)
+
+    # Set default selection
+    $radioButtons[2].Checked = $true # Default selection is "High"
 
     # Create OK button
     $okButton = New-Object System.Windows.Forms.Button
-    $okButton.Location = New-Object System.Drawing.Point(110,90)
+    $okButton.Location = New-Object System.Drawing.Point(110, $y)
     $okButton.Size = New-Object System.Drawing.Size(75,23)
     $okButton.Text = 'OK'
     $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
@@ -733,15 +733,21 @@ function Get-GraphicsQualityPreference {
     $result = $form.ShowDialog()
 
     if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
-        # Return the index of the selected choice + 1
-        return $comboBox.SelectedIndex + 1
+        # Find the selected radio button and return its index + 1
+        for ($i = 0; $i -lt $radioButtons.Count; $i++) {
+            if ($radioButtons[$i].Checked) {
+                return $i + 1
+            }
+        }
     } else {
         return $null
     }
 }
 
+
 # Call the function to prompt the user
 $graphicsQualityPreference = Get-GraphicsQualityPreference
+
 if ($graphicsQualityPreference -ne $null) {
     Write-Host "Selected graphics quality preference: $($graphicsQualityChoices[$graphicsQualityPreference - 1])"
 } else {
