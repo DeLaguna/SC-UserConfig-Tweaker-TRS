@@ -1,7 +1,7 @@
 # Star Citizen User.cfg Optimizer
-# Version: 2024.06.10-0513-Alpha
+# Version: 2024.06.10-0515-Alpha
 # Created by TheRealSarcasmO
-# https://linktr.ee/TheRealSarcasmO
+# https://linktr.ee/TheRealSarcasmO 
 
 # Inspired by ... emilwojcik93, and ... Isaard, and ...
 # ORG: Affordable Multi Role Space Support
@@ -55,11 +55,11 @@ if ($remoteVersion -gt $localVersion) {
     # Update the local script with the content from GitHub
     Set-Content -Path $localScriptPath -Value $remoteScriptContent
 
-    Write-Output "The script has been updated. The script will now close and relaunch."
+    Write-Output "The script has been updated. Close script and open again."
 
    # Relaunch the script in Administrator PowerShell ISE
-Start-Sleep -Seconds 2
-Start-Process PowerShell_ISE -ArgumentList "-File `"$localScriptPath`"" -Verb RunAs
+   #Start-Sleep -Seconds 2
+   #Start-Process PowerShell_ISE -ArgumentList "-File `"$localScriptPath`"" -Verb RunAs
 exit
 } else {
     Write-Output "You are running the latest version ($localVersion) of the script."
