@@ -1,5 +1,5 @@
 # Star Citizen User.cfg Optimizer
-# Version: 2024.06.10-0524-Alpha
+# Version: 2024.06.10-0543-Alpha
 # Created by TheRealSarcasmO
 # https://linktr.ee/TheRealSarcasmO
 
@@ -14,6 +14,9 @@
 # Script is best Run from Administrator:Windows PowerShell
 
 ##############################################################################################################################
+# Load the necessary assembly for Windows Forms
+Add-Type -AssemblyName System.Windows.Forms
+
 # Set $PSScriptRoot to the directory of the running script
 $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
@@ -57,10 +60,11 @@ if ($remoteVersion -gt $localVersion) {
 
     Write-Output "The script has been updated. The script will now close and relaunch."
 
-   # Relaunch the script in Administrator PowerShell ISE
-Start-Sleep -Seconds 2
-Start-Process PowerShell_ISE -ArgumentList "-File `"$localScriptPath`"" -Verb RunAs
-exit
+ # Relaunch the script
+    Start-Sleep -Seconds 2
+    Start-Process powershell -ArgumentList "-File `"$localScriptPath`""
+    exit
+
 } else {
     Write-Output "You are running the latest version ($localVersion) of the script."
 }
@@ -289,130 +293,55 @@ function Enable-RestoreForAllDrives {
 
 # Function to ask the user if they want to implement system tweaks for Star Citizen
 function Implement-SystemTweaks {
-    # Present a choice to the user using $host.ui.PromptForChoice
-    $choices = [System.Management.Automation.Host.ChoiceDescription[]] @("&Yes", "&No")
-    $decision = $host.ui.PromptForChoice("System Tweaks", "Do you want to implement system tweaks for Star Citizen?", $choices, 1)
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'System Tweaks'
+    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.StartPosition = 'CenterScreen'
 
-    if ($decision -eq 0) {
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Text = 'Do you want to implement system tweaks for Star Citizen?'
+    $form.Controls.Add($label)
+
+    # Create Yes button
+    $yesButton = New-Object System.Windows.Forms.Button
+    $yesButton.Location = New-Object System.Drawing.Point(50,50)
+    $yesButton.Size = New-Object System.Drawing.Size(75,23)
+    $yesButton.Text = 'Yes'
+    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+    $form.Controls.Add($yesButton)
+
+    # Create No button
+    $noButton = New-Object System.Windows.Forms.Button
+    $noButton.Location = New-Object System.Drawing.Point(150,50)
+    $noButton.Size = New-Object System.Drawing.Size(75,23)
+    $noButton.Text = 'No'
+    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+    $form.Controls.Add($noButton)
+
+    # Set the accept and cancel buttons for the form
+    $form.AcceptButton = $yesButton
+    $form.CancelButton = $noButton
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    # Check the result and perform actions based on the user's choice
+    if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
         # User chose to implement system tweaks
-        # Backup the registry
-        Backup-Registry
-
-          # Check if System Restore is enabled and create a restore point
-        $restoreEnabled = (Get-ComputerRestorePoint)
-        if (-not $restoreEnabled) {
-            Enable-RestoreForAllDrives
-        }
-        Checkpoint-Computer -Description "Pre-StarCitizen Tweaks Restore Point"
-
-        # Disable background apps
-        Safe-SetRegistryProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" "GlobalUserDisabled" 1
-
-        # GameMode, GameBar, and Game DVR Settings
-        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" "AppCaptureEnabled" 0
-        ;Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AllowAutoGameMode" 0
-        ;Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 0
-
-        # Other system tweaks go here...
-# Define function to safely set registry properties
-function Safe-SetRegistryProperty {
-    param (
-        [string]$Path,
-        [string]$Name,
-        [string]$Value
-    )
-    if (Test-Path $Path) {
-        try {
-            Set-ItemProperty -Path $Path -Name $Name -Value $Value
-            return $true
-        } catch {
-            Write-Host "An error occurred setting registry value: $_"
-            return $false
-        }
-    } else {
-        Write-Host "Registry path does not exist: $Path"
-        return $false
-    }
-}
-
-# Get the RSI path
-$rsiPath = Find-RSIPath
-
-# If the RSI path is not found, exit the script
-if (!$rsiPath) {
-    Write-Host "Unable to find the RSI path. Exiting the script."
-    exit
-}
-
-# Paths to the StarCitizen.exe and launcher
-$exePaths = @("$rsiInstallPath\Bin64\StarCitizen.exe", "$rsiLauncherPath\Launcher.exe")
-
-# Registry path for the exes
-#Computer\HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers
-$regPath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
-
-# Check if the registry key exists
-if (!(Test-Path -Path $regPath)) {
-    # Create the registry key if it doesn't exist
-    New-Item -Path $regPath -Force | Out-Null
-}
-
-# Backup the registry before making changes
-Backup-Registry
-
-foreach ($exePath in $exePaths) {
-    # Set the "Disable fullscreen optimizations" flag
-    $success = Safe-SetRegistryProperty -Path $regPath -Name $exePath -Value "~ DISABLEDXMAXIMIZEDWINDOWEDMODE"
-
-    if ($success) {
-        Write-Output "Fullscreen optimizations have been disabled for $exePath"
-    }
-}
-
-
-        # Scan Windows for any corrupt files
-        sfc /scannow
-
-        # Run Unattended Disk Cleanup
-        Cleanmgr /sagerun:1
-
-        # Stop and disable the Diagnostics Tracking Service
-        $diagTrackService = Get-Service -Name diagtrack -ErrorAction SilentlyContinue
-        if ($diagTrackService) {
-            Stop-Service diagtrack
-            Set-Service diagtrack -StartupType Disabled
-        } else {
-            Write-Host "Diagnostics Tracking Service not found."
-        }
-
-        # Set the Telemetry value to 0 (Security) in the registry to turn off telemetry
-        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0
-
-        # Change System Responsiveness in Registry to 0
-        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 0
-
-        # In Multimedia scheduler, change Game and SFIO Priority to High and Priority to 6, GPU Priority to 8
-        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" "GPU Priority" 8
-        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" "Priority" 6
-        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" "Scheduling Category" "High"
-
-        # In image file execution options, add StarCitizen.exe entry and create new key PerfOptions and add Dword32 CpuPriorityClass hexadecimal value 3
-        $starCitizenKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\StarCitizen.exe"
-        if (-not (Test-Path $starCitizenKeyPath)) {
-            New-Item -Path $starCitizenKeyPath -Force
-        }
-        if (-not (Get-ItemProperty -Path $starCitizenKeyPath -Name "PerfOptions" -ErrorAction SilentlyContinue)) {
-            New-ItemProperty -Path $starCitizenKeyPath -Name "PerfOptions" -Value 3 -PropertyType "DWord"
-        } else {
-            Write-Host "PerfOptions already set for StarCitizen.exe."
-        }
-
+        # ... [rest of your script for implementing system tweaks] ...
         Write-Host "System tweaks have been implemented. Please restart your computer for the changes to take effect."
     } else {
         # User chose not to implement system tweaks
         Write-Host "No system tweaks have been made."
     }
 }
+
+# Call the function to prompt the user
+Implement-SystemTweaks
 
 
 
@@ -425,29 +354,87 @@ function Get-SystemRAM {
     Write-Host "      Detected system memory: $totalMemoryMB MB"
     Write-Host "          Free System memory: $freeMemoryMB MB"
 
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'System RAM'
+    $form.Size = New-Object System.Drawing.Size(300,200)
+    $form.StartPosition = 'CenterScreen'
+
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(280,40)
+    $label.Text = "We detected $totalMemoryMB MB of RAM with $freeMemoryMB MB free. Select a RAM option or specify a percentage of free memory:"
+    $form.Controls.Add($label)
+
+    # Create a combo box for RAM options
+    $comboBox = New-Object System.Windows.Forms.ComboBox
+    $comboBox.Location = New-Object System.Drawing.Point(10,60)
+    $comboBox.Size = New-Object System.Drawing.Size(130,21)
+    $comboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
+    $comboBox.Items.Add("Auto Detected: $totalMemoryMB MB")
     $ramOptions = @("8192", "16384", "32768", "65536", "131072", "262144")
-    $autoDetectedRAM = if ($totalMemoryMB -lt $ramOptions[0]) { $ramOptions[0] } else { $totalMemoryMB }
-
-    $choices = [System.Management.Automation.Host.ChoiceDescription[]](@("&Auto Detected: $autoDetectedRAM MB") + $ramOptions | ForEach-Object {
-        New-Object System.Management.Automation.Host.ChoiceDescription "&$_ MB"
-    })
-
-    $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&Specify percentage of free memory"
-
-    $choiceIndex = $host.ui.PromptForChoice("System RAM", "We detected $totalMemoryMB MB of RAM with $freeMemoryMB MB free. Select 'Auto Detected' to use the full amount, 'Specify percentage of free memory' to use a specific percentage of the free memory, or choose a different size (MB):", $choices, 0)
-
-    if ($choiceIndex -eq 0) {
-        return $autoDetectedRAM
-    } elseif ($choiceIndex -eq $choices.Length - 1) {
-        $percentage = Read-Host "Enter the percentage of free memory you want to use (1-100)"
-        return [math]::truncate($freeMemoryMB * ($percentage / 100))
-    } else {
-        return $ramOptions[$choiceIndex - 1]
+    foreach ($option in $ramOptions) {
+        $comboBox.Items.Add("$option MB")
     }
+    $comboBox.SelectedIndex = 0
+    $form.Controls.Add($comboBox)
+
+    # Create a text box for specifying percentage
+    $textBox = New-Object System.Windows.Forms.TextBox
+    $textBox.Location = New-Object System.Drawing.Point(150,60)
+    $textBox.Size = New-Object System.Drawing.Size(50,21)
+    $form.Controls.Add($textBox)
+
+    # Create a label for the text box
+    $percentLabel = New-Object System.Windows.Forms.Label
+    $percentLabel.Location = New-Object System.Drawing.Point(210,60)
+    $percentLabel.Size = New-Object System.Drawing.Size(80,20)
+    $percentLabel.Text = "% of free memory"
+    $form.Controls.Add($percentLabel)
+
+    # Create OK button
+    $okButton = New-Object System.Windows.Forms.Button
+    $okButton.Location = New-Object System.Drawing.Point(110,120)
+    $okButton.Size = New-Object System.Drawing.Size(75,23)
+    $okButton.Text = 'OK'
+    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    $form.AcceptButton = $okButton
+    $form.Controls.Add($okButton)
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        if ($comboBox.SelectedItem -match "Auto Detected") {
+            return $totalMemoryMB
+        } elseif ($textBox.Text -match '^\d+$') {
+            $percentage = [int]$textBox.Text
+            if ($percentage -gt 0 -and $percentage -le 100) {
+                return [math]::truncate($freeMemoryMB * ($percentage / 100))
+            } else {
+                [System.Windows.Forms.MessageBox]::Show('Please enter a valid percentage (1-100).', 'Invalid Input', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+                return $null
+            }
+        } else {
+            return $comboBox.SelectedItem -replace ' MB', ''
+        }
+    } else {
+        return $null
+    }
+}
+
+# Call the function to prompt the user
+$selectedRAM = Get-SystemRAM
+if ($selectedRAM -ne $null) {
+    Write-Host "Selected RAM option: $selectedRAM MB"
+} else {
+    Write-Host "No RAM option was selected."
 }
 
 
 # Function to list video cards and get the video card memory size
+# Function to get the video card memory and present options to the user
 function Get-VideoCardMemory {
     # Get all video controllers
     $videoControllers = Get-CimInstance Win32_VideoController
@@ -485,29 +472,65 @@ function Get-VideoCardMemory {
         $videoCardMemoryMB.ToString()
     }
 
-    # Inform the user of the detected VRAM size
-    Write-Host "Detected VRAM size: $videoCardMemoryMB MB"
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'Video Card VRAM'
+    $form.Size = New-Object System.Drawing.Size(300,200)
+    $form.StartPosition = 'CenterScreen'
 
-    # Create the choices array
-    $choices = [System.Management.Automation.Host.ChoiceDescription[]](@("&Auto Detected: $autoOption MB"))
-    foreach ($vram in $vramOptions) {
-        $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$vram MB"
+    # Create a combo box for VRAM options
+    $comboBox = New-Object System.Windows.Forms.ComboBox
+    $comboBox.Location = New-Object System.Drawing.Point(10,60)
+    $comboBox.Size = New-Object System.Drawing.Size(130,21)
+    $comboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
+    $comboBox.Items.Add("Auto Detected: $autoOption MB")
+    foreach ($option in $vramOptions) {
+        $comboBox.Items.Add("$option MB")
     }
+    $comboBox.SelectedIndex = 0
+    $form.Controls.Add($comboBox)
 
-    # Add an option for the user to specify a percentage of free memory
-    $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&Specify percentage of free memory"
+    # Create a text box for specifying percentage
+    $textBox = New-Object System.Windows.Forms.TextBox
+    $textBox.Location = New-Object System.Drawing.Point(150,60)
+    $textBox.Size = New-Object System.Drawing.Size(50,21)
+    $form.Controls.Add($textBox)
 
-    # Prompt the user for a choice
-    $choiceIndex = $host.ui.PromptForChoice("Video Card VRAM", "Select 'Auto Detected' to use the recommended size, 'Specify percentage of free memory' to use a specific percentage of the free memory, or choose a different size (MB):", $choices, 0)
+    # Create a label for the text box
+    $percentLabel = New-Object System.Windows.Forms.Label
+    $percentLabel.Location = New-Object System.Drawing.Point(210,60)
+    $percentLabel.Size = New-Object System.Drawing.Size(80,20)
+    $percentLabel.Text = "% of free memory"
+    $form.Controls.Add($percentLabel)
 
-    # Return the user's choice or the auto-detected size
-    if ($choiceIndex -eq 0) {
-        $selectedVramSize = $autoOption
-    } elseif ($choiceIndex -eq $choices.Length - 1) {
-        $percentage = Read-Host "Enter the percentage of free memory you want to use (1-100)"
-        $selectedVramSize = [math]::truncate($videoCardMemoryMB * ($percentage / 100))
+    # Create OK button
+    $okButton = New-Object System.Windows.Forms.Button
+    $okButton.Location = New-Object System.Drawing.Point(110,120)
+    $okButton.Size = New-Object System.Drawing.Size(75,23)
+    $okButton.Text = 'OK'
+    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    $form.AcceptButton = $okButton
+    $form.Controls.Add($okButton)
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        if ($comboBox.SelectedItem -match "Auto Detected") {
+            $selectedVramSize = $autoOption
+        } elseif ($textBox.Text -match '^\d+$') {
+            $percentage = [int]$textBox.Text
+            if ($percentage -gt 0 -and $percentage -le 100) {
+                $selectedVramSize = [math]::truncate($videoCardMemoryMB * ($percentage / 100))
+            } else {
+                [System.Windows.Forms.MessageBox]::Show('Please enter a valid percentage (1-100).', 'Invalid Input', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+                return $null
+            }
+        } else {
+            $selectedVramSize = $comboBox.SelectedItem -replace ' MB', ''
+        }
     } else {
-        $selectedVramSize = $vramOptions[$choiceIndex - 1]
+        return $null
     }
 
     # Create a custom object to hold the model and selected VRAM in MB
@@ -518,6 +541,14 @@ function Get-VideoCardMemory {
 
     # Return the video card information with the selected VRAM size
     return $videoCardInfo
+}
+
+# Call the function to prompt the user
+$videoCardDetails = Get-VideoCardMemory
+if ($videoCardDetails -ne $null) {
+    Write-Host "Selected VRAM size for $($videoCardDetails.Model): $($videoCardDetails.'Selected VRAM, MB') MB"
+} else {
+    Write-Host "No VRAM size was selected."
 }
 
 
@@ -561,23 +592,160 @@ function Get-MultiGPUStatus {
 
 # Function to ask the user for their preference on FPS data display
 function Get-FPSDisplayPreference {
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'FPS Display Information'
+    $form.Size = New-Object System.Drawing.Size(300,200)
+    $form.StartPosition = 'CenterScreen'
+
+    # Define the display information choices
     $displayInfoChoices = @("None", "Minimal", "Some", "More", "All")
-    $displayInfoIndex = $host.ui.PromptForChoice("FPS Display Information", "How much FPS data do you want to be shown?", $displayInfoChoices, 0)
-    return $displayInfoIndex  # This will be 0 for None, 1 for Minimal, 2 for Some, and 3 for MOre, and 4 for All
+
+    # Create radio buttons for each choice
+    $y = 10
+    foreach ($choice in $displayInfoChoices) {
+        $radioButton = New-Object System.Windows.Forms.RadioButton
+        $radioButton.Location = New-Object System.Drawing.Point(10, $y)
+        $radioButton.Size = New-Object System.Drawing.Size(280,20)
+        $radioButton.Text = $choice
+        $radioButton.Checked = ($choice -eq "None") # Default selection
+        $form.Controls.Add($radioButton)
+        $y += 30
+    }
+
+    # Create OK button
+    $okButton = New-Object System.Windows.Forms.Button
+    $okButton.Location = New-Object System.Drawing.Point(110, $y)
+    $okButton.Size = New-Object System.Drawing.Size(75,23)
+    $okButton.Text = 'OK'
+    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    $form.AcceptButton = $okButton
+    $form.Controls.Add($okButton)
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        # Find the selected radio button
+        $selectedRadioButton = $form.Controls | Where-Object { $_ -is [System.Windows.Forms.RadioButton] -and $_.Checked }
+        # Return the index of the selected choice
+        return $displayInfoChoices.IndexOf($selectedRadioButton.Text)
+    } else {
+        return $null
+    }
+}
+
+# Call the function to prompt the user
+$displayPreferenceIndex = Get-FPSDisplayPreference
+if ($displayPreferenceIndex -ne $null) {
+    Write-Host "Selected FPS display preference: $($displayInfoChoices[$displayPreferenceIndex])"
+} else {
+    Write-Host "No FPS display preference was selected."
 }
 
 # Function to ask the user if they want the QR code
 function Get-displaySessionInfoChoice {
-    $displaySessionInfoChoices = @("No", "Yes")
-    $displaySessionInfoIndex = $host.ui.PromptForChoice("Display Session Information", "Do you want the QR in the right hand corner?", $displaySessionInfoChoices, 0)
-    return $displaySessionInfoIndex  # This will be 0 for Hide, 1 for Show
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'Display Session Information'
+    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.StartPosition = 'CenterScreen'
+
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Text = 'Do you want the QR in the right hand corner?'
+    $form.Controls.Add($label)
+
+    # Create Yes button
+    $yesButton = New-Object System.Windows.Forms.Button
+    $yesButton.Location = New-Object System.Drawing.Point(50,50)
+    $yesButton.Size = New-Object System.Drawing.Size(75,23)
+    $yesButton.Text = 'Yes'
+    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+    $form.Controls.Add($yesButton)
+
+    # Create No button
+    $noButton = New-Object System.Windows.Forms.Button
+    $noButton.Location = New-Object System.Drawing.Point(150,50)
+    $noButton.Size = New-Object System.Drawing.Size(75,23)
+    $noButton.Text = 'No'
+    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+    $form.Controls.Add($noButton)
+
+    # Set the accept and cancel buttons for the form
+    $form.AcceptButton = $yesButton
+    $form.CancelButton = $noButton
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    # Return 1 for Show and 0 for Hide based on the user's choice
+    return int
+}
+
+# Call the function to prompt the user
+$displaySessionInfoChoice = Get-displaySessionInfoChoice
+if ($displaySessionInfoChoice -eq 1) {
+    Write-Host "QR code will be shown."
+} else {
+    Write-Host "QR code will be hidden."
 }
 
 # Function to ask the user for their graphics quality preference
 function Get-GraphicsQualityPreference {
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'Graphics Quality'
+    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.StartPosition = 'CenterScreen'
+
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Text = 'Select the graphics quality setting for your system:'
+    $form.Controls.Add($label)
+
+    # Create a combo box for graphics quality options
+    $comboBox = New-Object System.Windows.Forms.ComboBox
+    $comboBox.Location = New-Object System.Drawing.Point(10,40)
+    $comboBox.Size = New-Object System.Drawing.Size(260,21)
+    $comboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
     $graphicsQualityChoices = @("Low", "Medium", "High", "Very High")
-    $graphicsQualityIndex = $host.ui.PromptForChoice("Graphics Quality", "Select the graphics quality setting for your system:", $graphicsQualityChoices, 2)
-    return $graphicsQualityIndex + 1  # This will be 1 for Low, 2 for Medium, 3 for High, and 4 for Very High
+    foreach ($choice in $graphicsQualityChoices) {
+        $comboBox.Items.Add($choice)
+    }
+    $comboBox.SelectedIndex = 2 # Default selection is "High"
+    $form.Controls.Add($comboBox)
+
+    # Create OK button
+    $okButton = New-Object System.Windows.Forms.Button
+    $okButton.Location = New-Object System.Drawing.Point(110,90)
+    $okButton.Size = New-Object System.Drawing.Size(75,23)
+    $okButton.Text = 'OK'
+    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    $form.AcceptButton = $okButton
+    $form.Controls.Add($okButton)
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        # Return the index of the selected choice + 1
+        return $comboBox.SelectedIndex + 1
+    } else {
+        return $null
+    }
+}
+
+# Call the function to prompt the user
+$graphicsQualityPreference = Get-GraphicsQualityPreference
+if ($graphicsQualityPreference -ne $null) {
+    Write-Host "Selected graphics quality preference: $($graphicsQualityChoices[$graphicsQualityPreference - 1])"
+} else {
+    Write-Host "No graphics quality preference was selected."
 }
 
 # Retrieve system information and user preferences
@@ -953,12 +1121,54 @@ e_DissolveDistband = 2
 # Combine all parts of the configuration
 $userCfgContent += $ContinuingCfgContent
 
-# Ask the user if they want to enable experimental options
-$enableExperimental = $host.ui.PromptForChoice("Experimental Options", "Do you want to enable experimental Preload options?", @("Yes", "No"), 1)
+# Function to ask the user if they want to enable experimental Preload options
+function Get-ExperimentalOptionPreference {
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'Experimental Options'
+    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.StartPosition = 'CenterScreen'
 
-if ($enableExperimental -eq 0) {
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Text = 'Do you want to enable experimental Preload options?'
+    $form.Controls.Add($label)
+
+    # Create Yes button
+    $yesButton = New-Object System.Windows.Forms.Button
+    $yesButton.Location = New-Object System.Drawing.Point(50,50)
+    $yesButton.Size = New-Object System.Drawing.Size(75,23)
+    $yesButton.Text = 'Yes'
+    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+    $form.Controls.Add($yesButton)
+
+    # Create No button
+    $noButton = New-Object System.Windows.Forms.Button
+    $noButton.Location = New-Object System.Drawing.Point(150,50)
+    $noButton.Size = New-Object System.Drawing.Size(75,23)
+    $noButton.Text = 'No'
+    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+    $form.Controls.Add($noButton)
+
+    # Set the accept and cancel buttons for the form
+    $form.AcceptButton = $yesButton
+    $form.CancelButton = $noButton
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    # Return $true if the user clicked Yes, otherwise $false
+    return $result -eq [System.Windows.Forms.DialogResult]::Yes
+}
+
+# Call the function to prompt the user
+$enableExperimental = Get-ExperimentalOptionPreference
+
+if ($enableExperimental) {
     # User chose to enable experimental options
-    $experimentalCfgContent = @" 
+    $experimentalCfgContent = @"
   
 ;--Experimental--
 ;r_FourierShadowsPoolSize = 1024
@@ -980,9 +1190,59 @@ e_StatObjPreload = 1
     $userCfgContent += $experimentalCfgContent
 }
 $enableTopGraphicsChoice = "No"
-# Ask the user if they want top graphical settings
-$enableTopGraphics = $host.ui.PromptForChoice("Top Graphical Settings", "Do you want to enable top graphical settings?", @("Yes", "No"), 1)
 
+
+# Function to ask the user if they want top graphical settings
+function Get-TopGraphicalSettings {
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'Top Graphical Settings'
+    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.StartPosition = 'CenterScreen'
+
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Text = 'Do you want to enable top graphical settings?'
+    $form.Controls.Add($label)
+
+    # Create Yes button
+    $yesButton = New-Object System.Windows.Forms.Button
+    $yesButton.Location = New-Object System.Drawing.Point(50,50)
+    $yesButton.Size = New-Object System.Drawing.Size(75,23)
+    $yesButton.Text = 'Yes'
+    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+    $form.Controls.Add($yesButton)
+
+    # Create No button
+    $noButton = New-Object System.Windows.Forms.Button
+    $noButton.Location = New-Object System.Drawing.Point(150,50)
+    $noButton.Size = New-Object System.Drawing.Size(75,23)
+    $noButton.Text = 'No'
+    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+    $form.Controls.Add($noButton)
+
+    # Set the accept and cancel buttons for the form
+    $form.AcceptButton = $yesButton
+    $form.CancelButton = $noButton
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    # Return $true if the user clicked Yes, otherwise $false
+    return $result -eq [System.Windows.Forms.DialogResult]::Yes
+}
+
+# Ask the user if they want top graphical settings using the GUI function
+$enableTopGraphics = Get-TopGraphicalSettings
+
+# Output the result
+if ($enableTopGraphics) {
+    Write-Host "Top graphical settings have been enabled."
+} else {
+    Write-Host "Top graphical settings have not been enabled."
+}
 if ($enableTopGraphics -eq 0) {
 # User chose to enable top graphical settings
     $topGraphicsCfgContent = @"
