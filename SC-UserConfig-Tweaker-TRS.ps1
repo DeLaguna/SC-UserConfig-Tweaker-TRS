@@ -1,5 +1,5 @@
 # Star Citizen User.cfg Optimizer
-# Version: 2024.06.10-0448-Alpha
+# Version: 2024.06.10-0502-Alpha
 # Created by TheRealSarcasmO
 # https://linktr.ee/TheRealSarcasmO
 
@@ -14,23 +14,26 @@
 # Script is best Run from Administrator:Windows PowerShell
 
 ##############################################################################################################################
-# URL of the raw script on GitHub
-$scriptUrl = "https://github.com/DeLaguna/SC-UserConfig-Tweaker-TRS/raw/main/SC-UserConfig-Tweaker-TRS.ps1"
-
-# Path to the local script
-$localScriptPath = "$PSScriptRoot\SC-UserConfig-Tweaker-TRS.ps1"
+# Set $PSScriptRoot to the directory of the running script
+$PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 # Function to get the version of a script
 function Get-ScriptVersion {
     param($scriptContent)
 
     # Extract the version from the script
-    if ($scriptContent -match '# Version: (\d{4}\.\d{2}\.\d{2}-\d{4}-Alpha)') {
+    if ($scriptContent -match '# Version: ([\d\.]+-\d{4}-\w+)') {
         return $matches[1]
     } else {
         throw "Could not find version in script."
     }
 }
+
+# Define the URL of the remote script on GitHub
+$remoteScriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1"
+
+# Define the path to the local script
+$localScriptPath = Join-Path $PSScriptRoot "SC-UserConfig-Tweaker-TRS.ps1"
 
 # Get the content of the local script
 $localScriptContent = Get-Content -Path $localScriptPath -Raw
@@ -38,29 +41,21 @@ $localScriptContent = Get-Content -Path $localScriptPath -Raw
 # Get the version of the local script
 $localVersion = Get-ScriptVersion -scriptContent $localScriptContent
 
-# Download the script from GitHub
-$githubScriptContent = (New-Object System.Net.WebClient).DownloadString($scriptUrl)
+# Download the script content from GitHub
+$webClient = New-Object System.Net.WebClient
+$remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
 
-# Get the version of the script on GitHub
-$githubVersion = Get-ScriptVersion -scriptContent $githubScriptContent
+# Get the version of the remote script
+$remoteVersion = Get-ScriptVersion -scriptContent $remoteScriptContent
 
-# Compare the GitHub version with the local version
-if ($githubVersion -gt $localVersion) {
-    Write-Output "A new version of the script is available on GitHub."
+# Compare the remote version with the local version
+if ($remoteVersion -gt $localVersion) {
+    Write-Output "A new version of the script is available on GitHub. Updating to version $remoteVersion."
 
-    # Ask the user if they want to update
-    $choice = Read-Host "Do you want to update to the new version $githubVersion ? From Old version $localVersion. (y/n)"
-    if ($choice -eq "y") {
-        # Backup the local script
-        Copy-Item -Path $localScriptPath -Destination "$localScriptPath.bak"
+    # Update the local script with the content from GitHub
+    Set-Content -Path $localScriptPath -Value $remoteScriptContent
 
-        # Update the local script with the content from GitHub
-        Set-Content -Path $localScriptPath -Value $githubScriptContent
-
-        Write-Output "The script has been updated to version $githubVersion. Please restart the script."
-    } else {
-        Write-Output "Continuing with the local version of the script."
-    }
+    Write-Output "The script has been updated. Please restart the script to use the new version."
 } else {
     Write-Output "You are running the latest version ($localVersion) of the script."
 }
