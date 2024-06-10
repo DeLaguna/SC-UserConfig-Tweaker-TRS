@@ -1,5 +1,5 @@
 # Star Citizen User.cfg Optimizer
-# Version: 2024.06.10-0502-Alpha
+# Version: 2024.06.10-0507-Alpha
 # Created by TheRealSarcasmO
 # https://linktr.ee/TheRealSarcasmO
 
