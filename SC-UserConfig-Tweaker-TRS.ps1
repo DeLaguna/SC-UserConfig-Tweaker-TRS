@@ -15,6 +15,10 @@ Write-Output "#                                                                 
 Write-Output "# Script is best Run from Administrator:Windows PowerShell                                                                    "
 Write-Output "##############################################################################################################################"
 
+# Define a flag to indicate if the script is running from GitHub
+$RunningFromGitHub = $true
+
+
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
@@ -37,6 +41,16 @@ $remoteScriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Twe
 
 # Define the path to the local script
 $localScriptPath = Join-Path $PSScriptRoot "SC-UserConfig-Tweaker-TRS.ps1"
+
+# Check if the script is running from GitHub
+if ($RunningFromGitHub) {
+    Write-Output "Running the script directly from GitHub."
+    # Download and execute the remote script content
+    $webClient = New-Object System.Net.WebClient
+    $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
+    Invoke-Expression $remoteScriptContent
+    exit
+}
 
 # Check if the local script exists
 if (Test-Path $localScriptPath) {
@@ -85,6 +99,7 @@ if ($localVersion -and $remoteVersion -gt $localVersion) {
 }
 ##############################################################################################################################
 Write-Output "==============================================================================="
+
 
 
 # Pause the script for 5 seconds
