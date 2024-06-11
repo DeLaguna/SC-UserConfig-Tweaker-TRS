@@ -18,63 +18,6 @@ Write-Output "##################################################################
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
-# Set $PSScriptRoot to the directory of the running script
-$PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
-
-# Define the URL of the remote script on GitHub
-$remoteScriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1"
-
-# Define the path to the local script
-$localScriptPath = Join-Path $PSScriptRoot "SC-UserConfig-Tweaker-TRS.ps1"
-
-# Check if the local script exists
-if (Test-Path $localScriptPath) {
-    # Get the content of the local script
-    $localScriptContent = Get-Content -Path $localScriptPath -Raw
-
-    # Get the version of the local script
-    if ($localScriptContent -match 'Version: (\d{4}\.\d{2}\.\d{2}-\d{4}-Alpha)') {
-        $localVersion = $matches[1]
-    } else {
-        Write-Output "Could not find version in local script."
-        $localVersion = $null
-    }
-
-    # Download the script content from GitHub
-    $webClient = New-Object System.Net.WebClient
-    $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
-
-    # Get the version of the remote script
-    if ($remoteScriptContent -match 'Version: (\d{4}\.\d{2}\.\d{2}-\d{4}-Alpha)') {
-        $remoteVersion = $matches[1]
-    } else {
-        Write-Output "Could not find version in remote script."
-        $remoteVersion = $null
-    }
-
-    # Compare the remote version with the local version
-    if ($remoteVersion -and $localVersion -and $remoteVersion -gt $localVersion) {
-        Write-Output "A new version of the script is available on GitHub. Updating to version $remoteVersion."
-
-        # Update the local script with the content from GitHub
-        Set-Content -Path $localScriptPath -Value $remoteScriptContent
-
-        Write-Output "The script has been updated. The script will now close and relaunch."
-
-        # Relaunch the script
-        Start-Sleep -Seconds 2
-        Start-Process powershell -ArgumentList "-File `"$localScriptPath`""
-        exit
-    } elseif ($localVersion) {
-        Write-Output "You are running the latest version ($localVersion) of the script."
-    }
-} else {
-    Write-Output "Local script not found. Running the remote script."
-    # Download and execute the remote script content
-    $webClient = New-Object System.Net.WebClient
-    $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
-    Invoke-Expression $remoteScriptContent
-}
 ##############################################################################################################################
 Write-Output "==============================================================================="
 
