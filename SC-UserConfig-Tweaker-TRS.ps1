@@ -1,3 +1,4 @@
+
 Write-Output "##############################################################################################################################"
 Write-Output "# Star Citizen User.cfg Optimizer                                                                                             "
 Write-Output "# Version: 2024.06.11-0751-Alpha"
@@ -14,11 +15,24 @@ Write-Output "# While this script does look for core count and optimize for it, 
 Write-Output "#                                                                                                                             "
 Write-Output "# Script is best Run from Administrator:Windows PowerShell                                                                    "
 Write-Output "##############################################################################################################################"
+# Define a flag to indicate if the script is running from GitHub or if the local file is missing
+$RunningFromGitHubOrLocalMissing = $false
 
-# Define a flag to indicate if the script is running from GitHub
-$RunningFromGitHub = $true
+# Attempt to determine if the script is running locally or remotely
+try {
+    # Get the location of the currently running script
+    $scriptLocation = $MyInvocation.MyCommand.Path
 
+    # If the script location is not defined, we are likely running remotely
+    if (-not $scriptLocation) {
+        $RunningFromGitHubOrLocalMissing = $true
+    }
+} catch {
+    # If an error occurs, assume we are running remotely
+    $RunningFromGitHubOrLocalMissing = $true
+}
 
+# Output script header
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
@@ -42,9 +56,9 @@ $remoteScriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Twe
 # Define the path to the local script
 $localScriptPath = Join-Path $PSScriptRoot "SC-UserConfig-Tweaker-TRS.ps1"
 
-# Check if the script is running from GitHub
-if ($RunningFromGitHub) {
-    Write-Output "Running the script directly from GitHub."
+# Check if the script is running from GitHub or if the local file is missing
+if ($RunningFromGitHubOrLocalMissing) {
+    Write-Output "Running the script directly from GitHub or local file is missing."
     # Download and execute the remote script content
     $webClient = New-Object System.Net.WebClient
     $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
@@ -99,6 +113,7 @@ if ($localVersion -and $remoteVersion -gt $localVersion) {
 }
 ##############################################################################################################################
 Write-Output "==============================================================================="
+
 
 
 
