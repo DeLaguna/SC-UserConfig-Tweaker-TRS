@@ -74,7 +74,6 @@ if (Test-Path $localScriptPath) {
     $webClient = New-Object System.Net.WebClient
     $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
     Invoke-Expression $remoteScriptContent
-    exit
 }
 ##############################################################################################################################
 Write-Output "==============================================================================="
