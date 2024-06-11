@@ -1,6 +1,6 @@
 Write-Output "##############################################################################################################################"
 Write-Output "# Star Citizen User.cfg Optimizer                                                                                             "
-Write-Output "# Version: 2024.06.11-0727-Alpha
+Write-Output "# Version: 2024.06.11-0727-Alpha"
 Write-Output "# Created by TheRealSarcasmO                                                                                                  "
 Write-Output "# https://linktr.ee/TheRealSarcasmO                                                                                           "
 Write-Output "#                                                                                                                             "
@@ -25,7 +25,7 @@ function Get-ScriptVersion {
     param($scriptContent)
 
     # Extract the version from the script
-    if ($scriptContent -match '# Version: 2024.06.11-0727-Alpha
+    if ($scriptContent -match '# Version: 2024.06.11-0727-Alpha"
         return $matches[1]
     } else {
         throw "Could not find version in script."
