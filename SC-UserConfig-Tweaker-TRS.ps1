@@ -14,6 +14,7 @@ Write-Output "# While this script does look for core count and optimize for it, 
 Write-Output "#                                                                                                                             "
 Write-Output "# Script is best Run from Administrator:Windows PowerShell                                                                    "
 Write-Output "##############################################################################################################################"
+#I know I need to fix missing VRAM dectection line 
 
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
