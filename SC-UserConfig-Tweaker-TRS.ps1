@@ -1,6 +1,6 @@
 Write-Output "##############################################################################################################################"
 Write-Output "# Star Citizen User.cfg Optimizer                                                                                             "
-Write-Output "# Version: 2024.06.11-0727-Alpha"
+Write-Output "# Version: 2024.06.15-0625-Alpha"                                                                                              
 Write-Output "# Created by TheRealSarcasmO                                                                                                  "
 Write-Output "# https://linktr.ee/TheRealSarcasmO                                                                                           "
 Write-Output "#                                                                                                                             "
@@ -14,18 +14,18 @@ Write-Output "# While this script does look for core count and optimize for it, 
 Write-Output "#                                                                                                                             "
 Write-Output "# Script is best Run from Administrator:Windows PowerShell                                                                    "
 Write-Output "##############################################################################################################################"
+
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
 # Set $PSScriptRoot to the directory of the running script
 $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
-# Function to get the version of a script
 function Get-ScriptVersion {
     param($scriptContent)
 
-    # Extract the version from the script
-    if ($scriptContent -match '# Version: 2024.06.11-0727-Alpha"
+    # Corrected regex pattern to extract the version from the script
+    if ($scriptContent -match 'Version: (\d{4}\.\d{2}\.\d{2}-\d{4}-Alpha)') {
         return $matches[1]
     } else {
         throw "Could not find version in script."
