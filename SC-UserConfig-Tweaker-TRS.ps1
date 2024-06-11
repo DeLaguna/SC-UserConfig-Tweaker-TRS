@@ -14,7 +14,6 @@ Write-Output "# While this script does look for core count and optimize for it, 
 Write-Output "#                                                                                                                             "
 Write-Output "# Script is best Run from Administrator:Windows PowerShell                                                                    "
 Write-Output "##############################################################################################################################"
-#I know I need to fix missing VRAM dectection line 
 
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
@@ -39,11 +38,21 @@ $remoteScriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Twe
 # Define the path to the local script
 $localScriptPath = Join-Path $PSScriptRoot "SC-UserConfig-Tweaker-TRS.ps1"
 
-# Get the content of the local script
-$localScriptContent = Get-Content -Path $localScriptPath -Raw
+# Check if the local script exists and is not empty
+if (Test-Path $localScriptPath -and (Get-Content $localScriptPath)) {
+    # Get the content of the local script
+    $localScriptContent = Get-Content -Path $localScriptPath -Raw
 
-# Get the version of the local script
-$localVersion = Get-ScriptVersion -scriptContent $localScriptContent
+    # Get the version of the local script
+    $localVersion = Get-ScriptVersion -scriptContent $localScriptContent
+} else {
+    Write-Output "Local script not found or is empty. Running the remote script."
+    # Download and execute the remote script content
+    $webClient = New-Object System.Net.WebClient
+    $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
+    Invoke-Expression $remoteScriptContent
+    exit
+}
 
 # Download the script content from GitHub
 $webClient = New-Object System.Net.WebClient
@@ -61,7 +70,7 @@ if ($remoteVersion -gt $localVersion) {
 
     Write-Output "The script has been updated. The script will now close and relaunch."
 
- # Relaunch the script
+    # Relaunch the script
     Start-Sleep -Seconds 2
     Start-Process powershell -ArgumentList "-File `"$localScriptPath`""
     exit
