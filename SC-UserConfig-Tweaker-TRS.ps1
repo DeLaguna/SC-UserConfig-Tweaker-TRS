@@ -62,7 +62,7 @@ $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
 $remoteVersion = Get-ScriptVersion -scriptContent $remoteScriptContent
 
 # Compare the remote version with the local version
-if ($remoteVersion -gt $localVersion) {
+if ($localVersion -and $remoteVersion -gt $localVersion) {
     Write-Output "A new version of the script is available on GitHub. Updating to version $remoteVersion."
 
     # Update the local script with the content from GitHub
@@ -75,8 +75,13 @@ if ($remoteVersion -gt $localVersion) {
     Start-Process powershell -ArgumentList "-File `"$localScriptPath`""
     exit
 
-} else {
+} elseif ($localVersion) {
     Write-Output "You are running the latest version ($localVersion) of the script."
+} else {
+    Write-Output "Unable to determine the local version. Running the remote script."
+    # Execute the remote script content
+    Invoke-Expression $remoteScriptContent
+    exit
 }
 ##############################################################################################################################
 Write-Output "==============================================================================="
