@@ -1,13 +1,13 @@
 Write-Output "##############################################################################################################################"
 # Version: 2024.06.11-0716-Alpha
-Write-Output "# Version: 2024.06.11-0716-Alpha
+Write-Output "# Version: 2024.06.11-0716-Alpha"
 Write-Output "# Created by TheRealSarcasmO"
 Write-Output "# https://linktr.ee/TheRealSarcasmO"
 Write-Output " "
 Write-Output "# Inspired by ... emilwojcik93, and ... Isaard, and ..."
 Write-Output "# ORG: Affordable Multi Role Space Support"
 Write-Output "# https://robertsspaceindustries.com/enlist?referral=STAR-BV4X-S3HG"
-Write-Output "#
+Write-Output "#"
 Write-Output "# TRS bringing you a script with a graphical twist for the discerning meatbag."
 Write-Output "# Depending on what cvars, CIG allow to be used, this script effects will work more or less."
 Write-Output "# While this script does look for core count and optimize for it, it is assumed that the user has at least 4 physical cores."
