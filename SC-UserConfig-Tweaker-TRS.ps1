@@ -1,4 +1,3 @@
-
 Write-Output "##############################################################################################################################"
 Write-Output "# Star Citizen User.cfg Optimizer                                                                                             "
 Write-Output "# Version: 2024.06.11-0751-Alpha"
@@ -15,40 +14,12 @@ Write-Output "# While this script does look for core count and optimize for it, 
 Write-Output "#                                                                                                                             "
 Write-Output "# Script is best Run from Administrator:Windows PowerShell                                                                    "
 Write-Output "##############################################################################################################################"
-# Define a flag to indicate if the script is running from GitHub or if the local file is missing
-$RunningFromGitHubOrLocalMissing = $false
 
-# Attempt to determine if the script is running locally or remotely
-try {
-    # Get the location of the currently running script
-    $scriptLocation = $MyInvocation.MyCommand.Path
-
-    # If the script location is not defined, we are likely running remotely
-    if (-not $scriptLocation) {
-        $RunningFromGitHubOrLocalMissing = $true
-    }
-} catch {
-    # If an error occurs, assume we are running remotely
-    $RunningFromGitHubOrLocalMissing = $true
-}
-
-# Output script header
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
 # Set $PSScriptRoot to the directory of the running script
 $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
-
-function Get-ScriptVersion {
-    param($scriptContent)
-
-    # Corrected regex pattern to extract the version from the script
-    if ($scriptContent -match 'Version: (\d{4}\.\d{2}\.\d{2}-\d{4}-Alpha)') {
-        return $matches[1]
-    } else {
-        throw "Could not find version in script."
-    }
-}
 
 # Define the URL of the remote script on GitHub
 $remoteScriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1"
@@ -56,23 +27,47 @@ $remoteScriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Twe
 # Define the path to the local script
 $localScriptPath = Join-Path $PSScriptRoot "SC-UserConfig-Tweaker-TRS.ps1"
 
-# Check if the script is running from GitHub or if the local file is missing
-if ($RunningFromGitHubOrLocalMissing) {
-    Write-Output "Running the script directly from GitHub or local file is missing."
-    # Download and execute the remote script content
-    $webClient = New-Object System.Net.WebClient
-    $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
-    Invoke-Expression $remoteScriptContent
-    exit
-}
-
 # Check if the local script exists
 if (Test-Path $localScriptPath) {
     # Get the content of the local script
     $localScriptContent = Get-Content -Path $localScriptPath -Raw
 
     # Get the version of the local script
-    $localVersion = Get-ScriptVersion -scriptContent $localScriptContent
+    if ($localScriptContent -match 'Version: (\d{4}\.\d{2}\.\d{2}-\d{4}-Alpha)') {
+        $localVersion = $matches[1]
+    } else {
+        Write-Output "Could not find version in local script."
+        $localVersion = $null
+    }
+
+    # Download the script content from GitHub
+    $webClient = New-Object System.Net.WebClient
+    $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
+
+    # Get the version of the remote script
+    if ($remoteScriptContent -match 'Version: (\d{4}\.\d{2}\.\d{2}-\d{4}-Alpha)') {
+        $remoteVersion = $matches[1]
+    } else {
+        Write-Output "Could not find version in remote script."
+        $remoteVersion = $null
+    }
+
+    # Compare the remote version with the local version
+    if ($remoteVersion -and $localVersion -and $remoteVersion -gt $localVersion) {
+        Write-Output "A new version of the script is available on GitHub. Updating to version $remoteVersion."
+
+        # Update the local script with the content from GitHub
+        Set-Content -Path $localScriptPath -Value $remoteScriptContent
+
+        Write-Output "The script has been updated. The script will now close and relaunch."
+
+        # Relaunch the script
+        Start-Sleep -Seconds 2
+        Start-Process powershell -ArgumentList "-File `"$localScriptPath`""
+        exit
+    } elseif ($localVersion) {
+        Write-Output "You are running the latest version ($localVersion) of the script."
+    }
 } else {
     Write-Output "Local script not found. Running the remote script."
     # Download and execute the remote script content
@@ -81,39 +76,8 @@ if (Test-Path $localScriptPath) {
     Invoke-Expression $remoteScriptContent
     exit
 }
-
-# Download the script content from GitHub
-$webClient = New-Object System.Net.WebClient
-$remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
-
-# Get the version of the remote script
-$remoteVersion = Get-ScriptVersion -scriptContent $remoteScriptContent
-
-# Compare the remote version with the local version
-if ($localVersion -and $remoteVersion -gt $localVersion) {
-    Write-Output "A new version of the script is available on GitHub. Updating to version $remoteVersion."
-
-    # Update the local script with the content from GitHub
-    Set-Content -Path $localScriptPath -Value $remoteScriptContent
-
-    Write-Output "The script has been updated. The script will now close and relaunch."
-
-    # Relaunch the script
-    Start-Sleep -Seconds 2
-    Start-Process powershell -ArgumentList "-File `"$localScriptPath`""
-    exit
-
-} elseif ($localVersion) {
-    Write-Output "You are running the latest version ($localVersion) of the script."
-} else {
-    Write-Output "Unable to determine the local version. Running the remote script."
-    # Execute the remote script content
-    Invoke-Expression $remoteScriptContent
-    exit
-}
 ##############################################################################################################################
 Write-Output "==============================================================================="
-
 
 
 
