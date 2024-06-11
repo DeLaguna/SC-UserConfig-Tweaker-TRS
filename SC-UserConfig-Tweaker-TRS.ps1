@@ -1,5 +1,5 @@
 # Star Citizen User.cfg Optimizer
-# Version: 2024.06.10-0640-Alpha
+# Version: 2024.06.11-0625-Alpha
 # Created by TheRealSarcasmO
 # https://linktr.ee/TheRealSarcasmO
 
@@ -71,6 +71,8 @@ if ($remoteVersion -gt $localVersion) {
 ##############################################################################################################################
 Write-Output "==============================================================================="
 
+
+
 Write-Host @"
 ===============================================================================
 DISCLAIMER OF ALL THE THINGS THAT COULD POSSIBLY GO WRONG (BUT PROBABLY WON'T)
@@ -92,12 +94,11 @@ Do you accept these terms and wish to continue? (y/n)
 "@
 
 $accept = Read-Host
+
 if ($accept -ne 'y') {
     Write-Host "You chose not to continue. Exiting script. Have a nice day playing it safe!"
     return
 }
-
-# Continue with the rest of script...
 
 # Check if running as administrator
 if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -161,7 +162,6 @@ if (!(Test-Path -Path $shortcutFilePath)) {
 } else {
     Write-Host "Shortcut already exists at: $shortcutFilePath"
 }
-
 
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
 
@@ -291,261 +291,6 @@ function Enable-RestoreForAllDrives {
     }
 }
 
-# Function to ask the user if they want to implement system tweaks for Star Citizen
-function Implement-SystemTweaks {
-    # Create a new form
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = 'System Tweaks'
-    $form.Size = New-Object System.Drawing.Size(500,150)
-    $form.StartPosition = 'CenterScreen'
-
-    # Create a label
-    $label = New-Object System.Windows.Forms.Label
-    $label.Location = New-Object System.Drawing.Point(10,10)
-    $label.Size = New-Object System.Drawing.Size(450,30)
-    $label.Text = 'Do you want to implement system tweaks for Star Citizen?'
-    $form.Controls.Add($label)
-
-    # Create Yes button
-    $yesButton = New-Object System.Windows.Forms.Button
-    $yesButton.Location = New-Object System.Drawing.Point(50,50)
-    $yesButton.Size = New-Object System.Drawing.Size(75,23)
-    $yesButton.Text = 'Yes'
-    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
-    $form.Controls.Add($yesButton)
-
-    # Create No button
-    $noButton = New-Object System.Windows.Forms.Button
-    $noButton.Location = New-Object System.Drawing.Point(150,50)
-    $noButton.Size = New-Object System.Drawing.Size(75,23)
-    $noButton.Text = 'No'
-    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
-    $form.Controls.Add($noButton)
-
-    # Set the accept and cancel buttons for the form
-    $form.AcceptButton = $yesButton
-    $form.CancelButton = $noButton
-
-    # Show the form as a dialog and capture the result
-    $result = $form.ShowDialog()
-
-    # Check the result and perform actions based on the user's choice
-    if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
-        # User chose to implement system tweaks
-        # ... [rest of your script for implementing system tweaks] ...
-        Write-Host "System tweaks have been implemented. Please restart your computer for the changes to take effect."
-    } else {
-        # User chose not to implement system tweaks
-        Write-Host "No system tweaks have been made."
-    }
-}
-
-
-
-# Function to get the total physical memory size and present options to the user
-function Get-SystemRAM {
-    # Get the total memory and available memory
-    $computerInfo = Get-CimInstance -ClassName CIM_OperatingSystem
-    $totalMemoryMB = [math]::truncate($computerInfo.TotalVisibleMemorySize / 1024)
-    $freeMemoryMB = [math]::truncate($computerInfo.FreePhysicalMemory / 1024)
-    Write-Host "      Detected system memory: $totalMemoryMB MB"
-    Write-Host "          Free System memory: $freeMemoryMB MB"
-
-    # Create a new form
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = 'System RAM'
-    $form.Size = New-Object System.Drawing.Size(300,200)
-    $form.StartPosition = 'CenterScreen'
-
-    # Create a label
-    $label = New-Object System.Windows.Forms.Label
-    $label.Location = New-Object System.Drawing.Point(10,10)
-    $label.Size = New-Object System.Drawing.Size(280,40)
-    $label.Text = "We detected $totalMemoryMB MB of RAM with $freeMemoryMB MB free. Select a RAM option or specify a percentage of free memory:"
-    $form.Controls.Add($label)
-
-    # Create a combo box for RAM options
-    $comboBox = New-Object System.Windows.Forms.ComboBox
-    $comboBox.Location = New-Object System.Drawing.Point(10,60)
-    $comboBox.Size = New-Object System.Drawing.Size(130,21)
-    $comboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-    $comboBox.Items.Add("Auto Detected: $totalMemoryMB MB")
-    $ramOptions = @("8192", "16384", "32768", "65536", "131072", "262144")
-    foreach ($option in $ramOptions) {
-        $comboBox.Items.Add("$option MB")
-    }
-    $comboBox.SelectedIndex = 0
-    $form.Controls.Add($comboBox)
-
-    # Create a text box for specifying percentage
-    $textBox = New-Object System.Windows.Forms.TextBox
-    $textBox.Location = New-Object System.Drawing.Point(150,60)
-    $textBox.Size = New-Object System.Drawing.Size(50,21)
-    $form.Controls.Add($textBox)
-
-    # Create a label for the text box
-    $percentLabel = New-Object System.Windows.Forms.Label
-    $percentLabel.Location = New-Object System.Drawing.Point(210,60)
-    $percentLabel.Size = New-Object System.Drawing.Size(80,20)
-    $percentLabel.Text = "% of free memory"
-    $form.Controls.Add($percentLabel)
-
-    # Create OK button
-    $okButton = New-Object System.Windows.Forms.Button
-    $okButton.Location = New-Object System.Drawing.Point(110,120)
-    $okButton.Size = New-Object System.Drawing.Size(75,23)
-    $okButton.Text = 'OK'
-    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $form.AcceptButton = $okButton
-    $form.Controls.Add($okButton)
-
-    # Show the form as a dialog and capture the result
-    $result = $form.ShowDialog()
-
-    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
-        if ($comboBox.SelectedItem -match "Auto Detected") {
-            return $totalMemoryMB
-        } elseif ($textBox.Text -match '^\d+$') {
-            $percentage = [int]$textBox.Text
-            if ($percentage -gt 0 -and $percentage -le 100) {
-                return [math]::truncate($freeMemoryMB * ($percentage / 100))
-            } else {
-                [System.Windows.Forms.MessageBox]::Show('Please enter a valid percentage (1-100).', 'Invalid Input', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-                return $null
-            }
-        } else {
-            return $comboBox.SelectedItem -replace ' MB', ''
-        }
-    } else {
-        return $null
-    }
-}
-
-
-
-if ($selectedRAM -ne $null) {
-    Write-Host "Selected RAM option: $selectedRAM MB"
-} else {
-    Write-Host "No RAM option was selected."
-}
-
-
-# Function to list video cards and get the video card memory size
-# Function to get the video card memory and present options to the user
-function Get-VideoCardMemory {
-    # Get all video controllers
-    $videoControllers = Get-CimInstance Win32_VideoController
-
-    # Sort video controllers by VRAM size in descending order
-    $sortedVideoControllers = $videoControllers | Sort-Object -Property AdapterRAM -Descending
-
-    # Select the video card with the largest VRAM
-    $largestVRAMVideoCard = $sortedVideoControllers | Select-Object -First 1
-
-    # Attempt to get the VRAM size from the registry for all video controllers
-    $qwMemorySizes = Get-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0*" -Name HardwareInformation.qwMemorySize -ErrorAction SilentlyContinue | Select-Object -ExpandProperty "HardwareInformation.qwMemorySize"
-
-    # If there are multiple entries, select the largest one
-    $largestQwMemorySize = if ($qwMemorySizes -and $qwMemorySizes.Count -gt 0) {
-        ($qwMemorySizes | Measure-Object -Maximum).Maximum
-    } else {
-        $null
-    }
-
-    # If the registry query was successful and the VRAM size is larger than what Win32_VideoController reports, use it
-    $videoCardMemoryMB = if ($largestQwMemorySize -and $largestQwMemorySize -gt $largestVRAMVideoCard.AdapterRAM) {
-        [math]::round($largestQwMemorySize / 1MB)
-    } else {
-        [math]::round($largestVRAMVideoCard.AdapterRAM / 1MB)
-    }
-
-    # Common VRAM sizes in MB
-    $vramOptions = @("2048", "4096", "6144", "8192", "11264", "16384", "24576")
-
-    # Auto-detected option
-    $autoOption = if ($videoCardMemoryMB -lt 4096) {
-        "4096"
-    } else {
-        $videoCardMemoryMB.ToString()
-    }
-
-    # Create a new form
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = 'Video Card VRAM'
-    $form.Size = New-Object System.Drawing.Size(300,200)
-    $form.StartPosition = 'CenterScreen'
-
-    # Create a combo box for VRAM options
-    $comboBox = New-Object System.Windows.Forms.ComboBox
-    $comboBox.Location = New-Object System.Drawing.Point(10,60)
-    $comboBox.Size = New-Object System.Drawing.Size(130,21)
-    $comboBox.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-    $comboBox.Items.Add("Auto Detected: $autoOption MB")
-    foreach ($option in $vramOptions) {
-        $comboBox.Items.Add("$option MB")
-    }
-    $comboBox.SelectedIndex = 0
-    $form.Controls.Add($comboBox)
-
-    # Create a text box for specifying percentage
-    $textBox = New-Object System.Windows.Forms.TextBox
-    $textBox.Location = New-Object System.Drawing.Point(150,60)
-    $textBox.Size = New-Object System.Drawing.Size(50,21)
-    $form.Controls.Add($textBox)
-
-    # Create a label for the text box
-    $percentLabel = New-Object System.Windows.Forms.Label
-    $percentLabel.Location = New-Object System.Drawing.Point(210,60)
-    $percentLabel.Size = New-Object System.Drawing.Size(80,20)
-    $percentLabel.Text = "% of free memory"
-    $form.Controls.Add($percentLabel)
-
-    # Create OK button
-    $okButton = New-Object System.Windows.Forms.Button
-    $okButton.Location = New-Object System.Drawing.Point(110,120)
-    $okButton.Size = New-Object System.Drawing.Size(75,23)
-    $okButton.Text = 'OK'
-    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $form.AcceptButton = $okButton
-    $form.Controls.Add($okButton)
-
-    # Show the form as a dialog and capture the result
-    $result = $form.ShowDialog()
-
-    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
-        if ($comboBox.SelectedItem -match "Auto Detected") {
-            $selectedVramSize = $autoOption
-        } elseif ($textBox.Text -match '^\d+$') {
-            $percentage = [int]$textBox.Text
-            if ($percentage -gt 0 -and $percentage -le 100) {
-                $selectedVramSize = [math]::truncate($videoCardMemoryMB * ($percentage / 100))
-            } else {
-                [System.Windows.Forms.MessageBox]::Show('Please enter a valid percentage (1-100).', 'Invalid Input', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-                return $null
-            }
-        } else {
-            $selectedVramSize = $comboBox.SelectedItem -replace ' MB', ''
-        }
-    } else {
-        return $null
-    }
-
-    # Create a custom object to hold the model and selected VRAM in MB
-    $videoCardInfo = [PSCustomObject] @{
-        Model      = $largestVRAMVideoCard.Caption
-        "Selected VRAM, MB" = $selectedVramSize
-    }
-
-    # Return the video card information with the selected VRAM size
-    return $videoCardInfo
-}
-
-if ($videoCardDetails -ne $null) {
-    Write-Host "Selected VRAM size for $($videoCardDetails.Model): $($videoCardDetails.'Selected VRAM, MB') MB"
-} else {
-    Write-Host "No VRAM size was selected."
-}
-
 # Function to get the maximum refresh rate of the fastest monitor
 function Get-MaxRefreshRate {
     $refreshRates = (Get-WmiObject Win32_VideoController).CurrentRefreshRate
@@ -584,12 +329,265 @@ function Get-MultiGPUStatus {
     return $multiGPU
 }
 
+# Function to backup keybinds and mappings
+function Backup-KeybindsAndMappings {
+    # Check if the backup directories exist, if not, create them
+    if (!(Test-Path -Path $keybindBackups)) {
+        New-Item -ItemType Directory -Path $keybindBackups
+    }
+    if (!(Test-Path -Path $mappingBackups)) {
+        New-Item -ItemType Directory -Path $mappingBackups
+    }
+
+    # Define the source directories for keybinds and mappings
+    $keybindsSource = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\USER\Client\0\Profiles\default"
+    $mappingsSource = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\USER\Client\0\Controls\Mappings"
+
+    # Copy the keybinds and mappings to the backup directories
+    Copy-Item -Path $keybindsSource -Destination $keybindBackups -Recurse
+    Copy-Item -Path $mappingsSource -Destination $mappingBackups -Recurse
+}
+
+# Function to create a CPU optimized section config string and add it to the $userCfgContent variable
+function Add-CPUOptimizedSectionToUserConfigContent {
+    # Retrieve the total number of logical processors (cores)
+    $cpuInfo = Get-CimInstance -ClassName Win32_Processor
+    $totalCores = $cpuInfo.NumberOfLogicalProcessors
+    # Create a new variable that is half of $totalCores
+    $halfCores = $totalCores / 2
+    # Create an array to hold the even core numbers
+    $evenCores = for ($i = 0; $i -lt $totalCores; $i += 2) { $i }
+
+    # Initialize the index for cycling through even cores
+    $coreIndex = 0
+
+    # Define the list of cvars to be set for each even core
+    $cvarsList = @(
+        "sys_main_CPU",
+        "sys_physics_CPU",
+        "sys_streaming_CPU",
+        "ca_thread",
+        "e_ParticlesThread",
+        "gfx_loadtimethread",
+        "e_StatObjMergeUseThread"
+        # Add more cvars as needed
+    )
+
+    # Initialize the cvars string to be added to the $userCfgContent variable
+    $cvarsConfigString = ";--CPU Optimized Section--`r`n" +
+    "r_MultiThreaded = 1`r`n" +
+    "sys_limit_phys_thread_count = $halfCores`r`n" +
+    "sys_job_system_enable = 1`r`n" +
+    "sys_job_system_max_worker = $halfCores`r`n" +
+    "ai_NavigationSystemMT = 1`r`n"
+
+    # Loop through the cvars list and assign even cores in a cycle
+    foreach ($cvar in $cvarsList) {
+        # Get the current even core number
+        $currentCore = $evenCores[$coreIndex]
+
+        # Add the cvar setting to the config string
+        $cvarsConfigString += "$cvar = $currentCore`r`n"
+
+        # Increment the core index and reset if it reaches the end of the even cores array
+        $coreIndex = ($coreIndex + 1) % $evenCores.Count
+    }
+
+    # Return the CPU optimized section config string
+    return $cvarsConfigString
+}
+
+# Define function to safely set registry properties
+function Safe-SetRegistryProperty {
+    param (
+        [string]$Path,
+        [string]$Name,
+        [string]$Value
+    )
+    if (Test-Path $Path) {
+        try {
+            Set-ItemProperty -Path $Path -Name $Name -Value $Value
+            return $true
+        } catch {
+            Write-Host "An error occurred setting registry value: $_"
+            return $false
+        }
+    } else {
+        Write-Host "Registry path does not exist: $Path"
+        return $false
+    }
+}
+
+# Function to ask the user if they want to implement system tweaks for Star Citizen
+function Implement-SystemTweaks {
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'System Tweaks'
+    $form.Size = New-Object System.Drawing.Size(350,150)
+    $form.StartPosition = 'CenterScreen'
+
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(300,30)
+    $label.Text = 'Do you want to implement system tweaks for Star Citizen?'
+    $form.Controls.Add($label)
+
+    # Create Yes button
+    $yesButton = New-Object System.Windows.Forms.Button
+    $yesButton.Location = New-Object System.Drawing.Point(50,50)
+    $yesButton.Size = New-Object System.Drawing.Size(75,23)
+    $yesButton.Text = 'Yes'
+    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+    $form.Controls.Add($yesButton)
+
+    # Create No button
+    $noButton = New-Object System.Windows.Forms.Button
+    $noButton.Location = New-Object System.Drawing.Point(150,50)
+    $noButton.Size = New-Object System.Drawing.Size(75,23)
+    $noButton.Text = 'No'
+    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+    $form.Controls.Add($noButton)
+
+    # Set the accept and cancel buttons for the form
+    $form.AcceptButton = $yesButton
+    $form.CancelButton = $noButton
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    # Check the result and perform actions based on the user's choice
+    if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+        # User chose to implement system tweaks
+        
+          # User chose to implement system tweaks
+        # Backup the registry
+        Backup-Registry
+
+          # Check if System Restore is enabled and create a restore point
+        $restoreEnabled = (Get-ComputerRestorePoint)
+        if (-not $restoreEnabled) {
+            Enable-RestoreForAllDrives
+        }
+        Checkpoint-Computer -Description "Pre-StarCitizen Tweaks Restore Point"
+
+        # Disable background apps
+        Safe-SetRegistryProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications" "GlobalUserDisabled" 1
+
+        # GameMode, GameBar, and Game DVR Settings
+        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" "AppCaptureEnabled" 0
+        ;Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AllowAutoGameMode" 0
+        ;Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 0
+
+        # Other system tweaks go here...
+
+# Get the RSI path
+$rsiPath = Find-RSIPath
+
+# If the RSI path is not found, exit the script
+if (!$rsiPath) {
+    Write-Host "Unable to find the RSI path. Exiting the script."
+    exit
+}
+
+# Paths to the StarCitizen.exe and launcher
+$exePaths = @("$rsiInstallPath\Bin64\StarCitizen.exe", "$rsiLauncherPath\Launcher.exe")
+
+# Registry path for the exes
+#Computer\HKEY_CURRENT_USER\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers
+$regPath = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
+
+# Check if the registry key exists
+if (!(Test-Path -Path $regPath)) {
+    # Create the registry key if it doesn't exist
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Backup the registry before making changes
+Backup-Registry
+
+foreach ($exePath in $exePaths) {
+    # Set the "Disable fullscreen optimizations" flag
+    $success = Safe-SetRegistryProperty -Path $regPath -Name $exePath -Value "~ DISABLEDXMAXIMIZEDWINDOWEDMODE"
+
+    if ($success) {
+        Write-Output "Fullscreen optimizations have been disabled for $exePath"
+    }
+}
+
+
+        # Scan Windows for any corrupt files
+        sfc /scannow
+
+        # Run Unattended Disk Cleanup
+        Cleanmgr /sagerun:1
+
+        # Stop and disable the Diagnostics Tracking Service
+        $diagTrackService = Get-Service -Name diagtrack -ErrorAction SilentlyContinue
+        if ($diagTrackService) {
+            Stop-Service diagtrack
+            Set-Service diagtrack -StartupType Disabled
+        } else {
+            Write-Host "Diagnostics Tracking Service not found."
+        }
+
+        # Set the Telemetry value to 0 (Security) in the registry to turn off telemetry
+        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" "AllowTelemetry" 0
+
+        # Change System Responsiveness in Registry to 0
+        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "SystemResponsiveness" 0
+
+        # In Multimedia scheduler, change Game and SFIO Priority to High and Priority to 6, GPU Priority to 8
+        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" "GPU Priority" 8
+        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" "Priority" 6
+        Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" "Scheduling Category" "High"
+
+        # In image file execution options, add StarCitizen.exe entry and create new key PerfOptions and add Dword32 CpuPriorityClass hexadecimal value 3
+        $starCitizenKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\StarCitizen.exe"
+        if (-not (Test-Path $starCitizenKeyPath)) {
+            New-Item -Path $starCitizenKeyPath -Force
+        }
+        if (-not (Get-ItemProperty -Path $starCitizenKeyPath -Name "PerfOptions" -ErrorAction SilentlyContinue)) {
+            New-ItemProperty -Path $starCitizenKeyPath -Name "PerfOptions" -Value 3 -PropertyType "DWord"
+        } else {
+            Write-Host "PerfOptions already set for StarCitizen.exe."
+        }
+
+        Write-Host "System tweaks have been implemented. Please restart your computer for the changes to take effect."
+
+      } else {
+        # User chose not to implement system tweaks
+        Write-Host "No system tweaks have been made."
+    }
+}
+
+
+function Get-SystemRAM {
+    # Get the total memory and available memory
+    $computerInfo = Get-CimInstance -ClassName CIM_OperatingSystem
+    $totalMemoryMB = [math]::truncate($computerInfo.TotalVisibleMemorySize / 1024)
+    $freeMemoryMB = [math]::truncate($computerInfo.FreePhysicalMemory / 1024)
+
+    # Calculate 95% of the free memory
+    $selectedRAM = [int][math]::truncate($freeMemoryMB * 0.95)
+
+    # Create a custom object to hold the detected, free, and selected RAM in MB
+    $ramInfo = [PSCustomObject] @{
+        TotalRAM_MB = $totalMemoryMB
+        FreeRAM_MB = $freeMemoryMB
+        SelectedRAM_MB = $selectedRAM
+    }
+
+    # Return the custom object
+    return $ramInfo
+}
+
 # Function to ask the user for their preference on FPS data display
 function Get-FPSDisplayPreference {
     # Create a new form
     $form = New-Object System.Windows.Forms.Form
     $form.Text = 'FPS Display Information'
-    $form.Size = New-Object System.Drawing.Size(300,200)
+    $form.Size = New-Object System.Drawing.Size(300,300)
     $form.StartPosition = 'CenterScreen'
 
     # Define the display information choices
@@ -627,13 +625,6 @@ function Get-FPSDisplayPreference {
     } else {
         return $null
     }
-}
-
-
-if ($displayPreferenceIndex -ne $null) {
-    Write-Host "Selected FPS display preference: $($displayInfoChoices[$displayPreferenceIndex])"
-} else {
-    Write-Host "No FPS display preference was selected."
 }
 
 # Function to ask the user if they want the QR code
@@ -675,23 +666,15 @@ function Get-displaySessionInfoChoice {
     $result = $form.ShowDialog()
 
     # Return 1 for Show and 0 for Hide based on the user's choice
-    return int
+    return $result -eq [System.Windows.Forms.DialogResult]::Yes
 }
 
-# Call the function to prompt the user
-$displaySessionInfoChoice = Get-displaySessionInfoChoice
-
-if ($displaySessionInfoChoice -eq 1) {
-    Write-Host "QR code will be shown."
-} else {
-    Write-Host "QR code will be hidden."
-}
-
+# Function to Get Graphics Quality Pref from User
 function Get-GraphicsQualityPreference {
     # Create a new form
     $form = New-Object System.Windows.Forms.Form
     $form.Text = 'Graphics Quality'
-    $form.Size = New-Object System.Drawing.Size(300,300) # Adjusted for radio buttons
+    $form.Size = New-Object System.Drawing.Size(300,275) # Adjusted for radio buttons
     $form.StartPosition = 'CenterScreen'
 
     # Create a label
@@ -744,29 +727,178 @@ function Get-GraphicsQualityPreference {
     }
 }
 
+# Function to ask the user if they want to enable experimental Preload options
+function Get-ExperimentalOptionPreference {
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'Experimental Options'
+    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.StartPosition = 'CenterScreen'
 
-# Call the function to prompt the user
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Text = 'Do you want to enable experimental Preload options?'
+    $form.Controls.Add($label)
+
+    # Create Yes button
+    $yesButton = New-Object System.Windows.Forms.Button
+    $yesButton.Location = New-Object System.Drawing.Point(50,50)
+    $yesButton.Size = New-Object System.Drawing.Size(75,23)
+    $yesButton.Text = 'Yes'
+    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+    $form.Controls.Add($yesButton)
+
+    # Create No button
+    $noButton = New-Object System.Windows.Forms.Button
+    $noButton.Location = New-Object System.Drawing.Point(150,50)
+    $noButton.Size = New-Object System.Drawing.Size(75,23)
+    $noButton.Text = 'No'
+    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+    $form.Controls.Add($noButton)
+
+    # Set the accept and cancel buttons for the form
+    $form.AcceptButton = $yesButton
+    $form.CancelButton = $noButton
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    # Return $true if the user clicked Yes, otherwise $false
+    return $result -eq [System.Windows.Forms.DialogResult]::Yes
+}
+
+# Function to ask the user if they want top graphical settings
+function Get-TopGraphicalSettings {
+    # Create a new form
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = 'Top Graphical Settings'
+    $form.Size = New-Object System.Drawing.Size(300,150)
+    $form.StartPosition = 'CenterScreen'
+
+    # Create a label
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,10)
+    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Text = 'Do you want to enable top graphical settings?'
+    $form.Controls.Add($label)
+
+    # Create Yes button
+    $yesButton = New-Object System.Windows.Forms.Button
+    $yesButton.Location = New-Object System.Drawing.Point(50,50)
+    $yesButton.Size = New-Object System.Drawing.Size(75,23)
+    $yesButton.Text = 'Yes'
+    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+    $form.Controls.Add($yesButton)
+
+        # Create No button
+    $noButton = New-Object System.Windows.Forms.Button
+    $noButton.Location = New-Object System.Drawing.Point(150,50)
+    $noButton.Size = New-Object System.Drawing.Size(75,23)
+    $noButton.Text = 'No'
+    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+    $form.Controls.Add($noButton)
+
+    # Set the accept and cancel buttons for the form
+    $form.AcceptButton = $yesButton
+    $form.CancelButton = $noButton
+
+    # Show the form as a dialog and capture the result
+    $result = $form.ShowDialog()
+
+    # Return $true if the user clicked Yes, otherwise $false
+    return $result -eq [System.Windows.Forms.DialogResult]::Yes
+}
+
+# Define the display information choices
+$displayInfoChoices = @("None", "Minimal", "Some", "More", "All")
+
+# Define the graphics quality choices
+$graphicsQualityChoices = @("Low", "Medium", "High", "Very High")
+
+# User Questions 
+$selectedVRAMCardInfo = Get-VideoCardMemory
+$ramInfo = Get-SystemRAM
+$displayInfoSetting = Get-FPSDisplayPreference  # This will be 1 for Low, 2 for Medium, 3 for High, and 4 for Very High
+$displaySessionInfoSetting = Get-displaySessionInfoChoice
 $graphicsQualityPreference = Get-GraphicsQualityPreference
+$enableExperimental = Get-ExperimentalOptionPreference
+$enableTopGraphics = Get-TopGraphicalSettings
 
+# Retrieve system information and user preferences
+$rsiFolderPath = Find-RSIPath
+$liveFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\"
+
+# Retrieve and set system information
+$systemInfo = Get-SystemInfo
+$systemRAMChoice = $($ramInfo.SelectedRAM_MB)
+Write-Host " $($ramInfo.SelectedRAM_MB) MB"
+Write-Host " $systemRAMChoice MB"
+$videoCardMemoryMB = $($selectedVRAMCardInfo.'Selected VRAM, MB')
+$maxReadSpeedMB = Get-HDDMaxReadSpeed
+$r_MultiGPU = Get-MultiGPUStatus
+$maxRefreshRate = Get-MaxRefreshRate
+
+# Call the function to create the CPU optimized section config string
+$cpuOptimizedConfigString = Add-CPUOptimizedSectionToUserConfigContent
+
+
+
+# FPS Display Preference
+if ($displayInfoSetting -ne $null) {
+    Write-Host "Selected FPS display preference: $($displayInfoChoices[$displayInfoSetting])"
+} else {
+    Write-Host "No FPS display preference was selected."
+}
+
+
+
+# System Memory
+if ($systemRAMChoice -ne $null) {
+    # Display the RAM information
+Write-Host "Total System RAM: $($ramInfo.TotalRAM_MB) MB"
+Write-Host "Free System RAM: $($ramInfo.FreeRAM_MB) MB"
+Write-Host "95% of Free System RAM: $($ramInfo.SelectedRAM_MB) MB" 
+} else {
+    Write-Host "No RAM option was selected."    
+}
+
+# QR Code
+if ($displaySessionInfoSetting -eq 1) {
+    Write-Host "QR code will be shown."
+} else {
+    Write-Host "QR code will be hidden."
+}
+
+# Graphics Quality
 if ($graphicsQualityPreference -ne $null) {
     Write-Host "Selected graphics quality preference: $($graphicsQualityChoices[$graphicsQualityPreference - 1])"
 } else {
     Write-Host "No graphics quality preference was selected."
 }
 
-# Retrieve system information and user preferences
-$selectedVRAMCardInfo = Get-VideoCardMemory
-$rsiFolderPath = Find-RSIPath
-$liveFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\"
+# VRAM Size
+if ($selectedVRAMCardInfo -ne $null) {
+    Write-Host "Selected VRAM size for $($selectedVRAMCardInfo.Model): $($selectedVRAMCardInfo.'Selected VRAM, MB') MB"
+} else {
+    Write-Host "No VRAM size was selected."
+}
 
-# Retrieve system information
-$systemInfo = Get-SystemInfo
-
+# TopGraphics Use Choice
+if ($enableTopGraphics -eq 1) {
+    Write-Host "Top graphical settings have been enabled."
+    $enableTopGraphicsChoice = "Yes"
+} else {
+    Write-Host "Top graphical settings have not been enabled."
+    $enableTopGraphicsChoice = "No"
+}
 
 $rsiInstallPath = "$rsiFolderPath\StarCitizen\LIVE"
 $rsiLauncherPath = "$rsiFolderPath\RSI Launcher"
 #$diskInfo = Get-DiskInfoForPath -Path $rsiInstallPath
 
+ 
 # Show user information of system info properties:
 Write-Host "                    Username: $($systemInfo.Username)"
 Write-Host "                 System Name: $($systemInfo.SystemName)"
@@ -774,24 +906,19 @@ Write-Host "            Operating System: $($systemInfo.OperatingSystem)"
 Write-Host "          CPU Name and Brand: $($systemInfo.CPUNameAndBrand)"
 Write-Host "Number of Physical CPU Cores: $($systemInfo.PhysicalCores)"
 Write-Host "               Max CPU Speed: $($systemInfo.MaxCPUSpeedGHz) GHz"
-
-# Now you can access the disk and controller info like this:
-#Write-Host "                   Disk Info: $($diskInfo.Disk | Format-List | Out-String)"
-#Write-Host "             Controller Info: $($diskInfo.Controller | Format-List | Out-String)"
-
-$systemRAMChoice = Get-SystemRAM
-$videoCardMemoryMB = $selectedVRAMCardInfo.'Selected VRAM, MB'
-$maxReadSpeedMB = Get-HDDMaxReadSpeed
-$r_MultiGPU = Get-MultiGPUStatus
-$displayInfoSetting = Get-FPSDisplayPreference  # This will be 1 for Low, 2 for Medium, 3 for High, and 4 for Very High
-$displaySessionInfoSetting = Get-displaySessionInfoChoice
-$graphicsQuality = Get-GraphicsQualityPreference
-$maxRefreshRate = Get-MaxRefreshRate
+Write-Host "            Total System RAM: $($ramInfo.TotalRAM_MB) MB"
+Write-Host "             Free System RAM: $($ramInfo.FreeRAM_MB) MB"
+Write-Host "      95% of Free System RAM: $($ramInfo.SelectedRAM_MB) MB"
+Write-Host "         Display Info Choice: $displayInfoSetting (This will be 1 for Low, 2 for Medium, 3 for High, and 4 for Very High)"
+Write-Host " Display Session Info Choice: $displaySessionInfoSetting"
+Write-Host "   The Max Refreshrate found: $maxRefreshRate Mhz"
 
 # Info to user.
-Write-Host "Video Card with the largest VRAM:"
-Write-Host "        Model: $($selectedVRAMCardInfo.Model)"
-Write-Host "Selected VRAM: $($selectedVRAMCardInfo.'Selected VRAM, MB') MB"
+Write-Host "          :Video Card with the largest VRAM:"
+Write-Host "                       Model: $($selectedVRAMCardInfo.Model)"
+Write-Host "               Detected VRAM: $($selectedVRAMCardInfo.'VRAM, MB') MB"
+Write-Host "               Selected VRAM: $($selectedVRAMCardInfo.'Selected VRAM, MB') MB"
+
 if ($rsiFolderPath) {
     # Define the path to the User.cfg and Game.cfg file using the found RSI path
     $userCfgFilePath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\user.cfg"
@@ -823,10 +950,7 @@ Copy-Item -Path $userCfgFilePath -Destination $backupFilePath
 Write-Host "The 'Roberts Space Industries' folder could not be found."
 }
 
-Write-Host "         Display Info Choice: $displayInfoSetting (This will be 1 for Low, 2 for Medium, 3 for High, and 4 for Very High)"
-Write-Host " Display Session Info Choice: $displaySessionInfoSetting"
-Write-Host "   The Max Refreshrate found: $maxRefreshRate Mhz"
-Write-Host "Number of physical CPU cores: $($systemInfo.PhysicalCores)"
+
 #######################################################
 
 # Check if the version file exists and read the version information
@@ -848,78 +972,13 @@ Write-Host "Preparing to tweak settings for Star Citizen Version: $versionInfo"
 # Define the backup directories with timestamp
 $keybindBackups = "$rsiFolderPath\StarCitizen\Backups\USER\Keybinds\$timestamp"
 $mappingBackups = "$rsiFolderPath\StarCitizen\Backups\USER\Mappings\$timestamp"
-$backups = "$rsiFolderPath\StarCitizen\Backups\$timestamp"
+       $backups = "$rsiFolderPath\StarCitizen\Backups\$timestamp"
 
-# Function to backup keybinds and mappings
-function Backup-KeybindsAndMappings {
-    # Check if the backup directories exist, if not, create them
-    if (!(Test-Path -Path $keybindBackups)) {
-        New-Item -ItemType Directory -Path $keybindBackups
-    }
-    if (!(Test-Path -Path $mappingBackups)) {
-        New-Item -ItemType Directory -Path $mappingBackups
-    }
+  #      DSR = $totalMemoryMB
+  #      FR = $freeMemoryMB
+  #      SR = $selectedRAM
+  
 
-    # Define the source directories for keybinds and mappings
-    $keybindsSource = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\USER\Client\0\Profiles\default"
-    $mappingsSource = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\USER\Client\0\Controls\Mappings"
-
-    # Copy the keybinds and mappings to the backup directories
-    Copy-Item -Path $keybindsSource -Destination $keybindBackups -Recurse
-    Copy-Item -Path $mappingsSource -Destination $mappingBackups -Recurse
-}
-
-
-# Function to create a CPU optimized section config string and add it to the $userCfgContent variable
-function Add-CPUOptimizedSectionToUserConfigContent {
-    # Retrieve the total number of logical processors (cores)
-    $cpuInfo = Get-CimInstance -ClassName Win32_Processor
-    $totalCores = $cpuInfo.NumberOfLogicalProcessors
-    # Create a new variable that is half of $totalCores
-    $halfCores = $totalCores / 2
-    # Create an array to hold the even core numbers
-    $evenCores = for ($i = 0; $i -lt $totalCores; $i += 2) { $i }
-
-    # Initialize the index for cycling through even cores
-    $coreIndex = 0
-
-    # Define the list of cvars to be set for each even core
-    $cvarsList = @(
-        "sys_main_CPU",
-        "sys_physics_CPU",
-        "sys_streaming_CPU",
-        "ca_thread",
-        "e_ParticlesThread",
-        "gfx_loadtimethread",
-        "e_StatObjMergeUseThread"
-        # Add more cvars as needed
-    )
-
-    # Initialize the cvars string to be added to the $userCfgContent variable
-    $cvarsConfigString = ";--CPU Optimized Section--`r`n" +
-    "r_MultiThreaded = 1`r`n" +
-    "sys_limit_phys_thread_count = $halfCores`r`n" +
-    "sys_job_system_enable = 1`r`n" +
-    "sys_job_system_max_worker = $halfCores`r`n" +
-    "ai_NavigationSystemMT = 1`r`n"
-
-    # Loop through the cvars list and assign even cores in a cycle
-    foreach ($cvar in $cvarsList) {
-        # Get the current even core number
-        $currentCore = $evenCores[$coreIndex]
-
-        # Add the cvar setting to the config string
-        $cvarsConfigString += "$cvar = $currentCore`r`n"
-
-        # Increment the core index and reset if it reaches the end of the even cores array
-        $coreIndex = ($coreIndex + 1) % $evenCores.Count
-    }
-
-    # Return the CPU optimized section config string
-    return $cvarsConfigString
-}
-
-# Main script execution starts here
 
 # Create the user.cfg content with new settings and user choices
 $userCfgContent = @"
@@ -941,11 +1000,18 @@ $userCfgContent = @"
 ;                       Max CPU Speed: $($systemInfo.MaxCPUSpeedGHz) GHz
 ;        Number of physical CPU cores: $($systemInfo.PhysicalCores)
 
-;       System RAM allocated Detected: $systemRAMChoice MB
-;Video Card Memory allocated Detected: $videoCardMemoryMB MB
-;        Graphics Preference Selected: $graphicsQuality
-;                Graphics Quality Set: $graphicsQuality
+;                          System RAM: $($ramInfo.TotalRAM_MB) MB
+;                     Free System RAM: $($ramInfo.FreeRAM_MB) MB
+;              95% of Free System RAM: $($ramInfo.SelectedRAM_MB) MB
+
+;                    Video Card Model: $($selectedVRAMCardInfo.Model)
+;                       Detected VRAM: $($selectedVRAMCardInfo.'VRAM, MB') MB
+;         Video Card Memory allocated: $($selectedVRAMCardInfo.'Selected VRAM, MB') MB
+
+;        Graphics Preference Selected: $graphicsQualityPreference
+;                    Top Graphics Set: $enableTopGraphicsChoice
 ;                     Fastest Monitor: $maxRefreshRate Mhz
+
 ; TOS accepted by User
 ;--Enables in-game console--
 ;--By default, you are restricted to only a handful of console commands you can use.--
@@ -980,9 +1046,6 @@ sys_maxIdleFps = 30
 
 "@
 
-# Call the function to create the CPU optimized section config string
-$cpuOptimizedConfigString = Add-CPUOptimizedSectionToUserConfigContent
-
 # Append the CPU optimized section config string to the $userCfgContent variable
 $userCfgContent += $cpuOptimizedConfigString
 
@@ -1006,41 +1069,41 @@ r_ProfileGPU = 0
 r_RenderThreadDebugEventsEnable = 0
 
 ;--Graphics Settings--
-sys_spec = $graphicsQuality
-sys_spec_Full = $graphicsQuality
-sys_spec_Quality = $graphicsQuality
-sys_spec_GameEffects = $graphicsQuality
-sys_spec_Light = $graphicsQuality
-sys_spec_ObjectDetail = $graphicsQuality
-sys_spec_Particles = $graphicsQuality
-sys_spec_Physics = $graphicsQuality
-sys_spec_PostProcessing = $graphicsQuality
-sys_spec_Shading = $graphicsQuality
-sys_spec_Shadows = $graphicsQuality
-sys_spec_Sound = $graphicsQuality
-sys_spec_Texture = $graphicsQuality
-sys_spec_TextureResolution = $graphicsQuality
-sys_spec_VolumetricEffects = $graphicsQuality
-sys_spec_Water = $graphicsQuality
+sys_spec = $graphicsQualityPreference
+sys_spec_Full = $graphicsQualityPreference
+sys_spec_Quality = $graphicsQualityPreference
+sys_spec_GameEffects = $graphicsQualityPreference
+sys_spec_Light = $graphicsQualityPreference
+sys_spec_ObjectDetail = $graphicsQualityPreference
+sys_spec_Particles = $graphicsQualityPreference
+sys_spec_Physics = $graphicsQualityPreference
+sys_spec_PostProcessing = $graphicsQualityPreference
+sys_spec_Shading = $graphicsQualityPreference
+sys_spec_Shadows = $graphicsQualityPreference
+sys_spec_Sound = $graphicsQualityPreference
+sys_spec_Texture = $graphicsQualityPreference
+sys_spec_TextureResolution = $graphicsQualityPreference
+sys_spec_VolumetricEffects = $graphicsQualityPreference
+sys_spec_Water = $graphicsQualityPreference
 
 ;--Individual Shader Tweaks--
-q_Quality = $graphicsQuality
-q_Renderer = $graphicsQuality
-q_ShaderFX = $graphicsQuality
-q_ShaderGeneral = $graphicsQuality
-q_ShaderGlass = $graphicsQuality
-q_ShaderHDR = $graphicsQuality
-q_ShaderIce = $graphicsQuality
-q_ShaderMetal = $graphicsQuality
-q_ShaderPostProcess = $graphicsQuality
-q_ShaderShadow = $graphicsQuality
-q_ShaderSky = $graphicsQuality
-q_ShaderTerrain = $graphicsQuality
+q_Quality = $graphicsQualityPreference
+q_Renderer = $graphicsQualityPreference
+q_ShaderFX = $graphicsQualityPreference
+q_ShaderGeneral = $graphicsQualityPreference
+q_ShaderGlass = $graphicsQualityPreference
+q_ShaderHDR = $graphicsQualityPreference
+q_ShaderIce = $graphicsQualityPreference
+q_ShaderMetal = $graphicsQualityPreference
+q_ShaderPostProcess = $graphicsQualityPreference
+q_ShaderShadow = $graphicsQualityPreference
+q_ShaderSky = $graphicsQualityPreference
+q_ShaderTerrain = $graphicsQualityPreference
 
 ;--ShaderVegetation--
-q_ShaderWater = $graphicsQuality
-q_ShaderParticle = $graphicsQuality
-q_ShaderDecal = $graphicsQuality
+q_ShaderWater = $graphicsQualityPreference
+q_ShaderParticle = $graphicsQualityPreference
+q_ShaderDecal = $graphicsQualityPreference
 
 ;--Texture Quality--
 r_TexturesStreaming = 1
@@ -1127,56 +1190,12 @@ e_DissolveDistband = 2
 # Combine all parts of the configuration
 $userCfgContent += $ContinuingCfgContent
 
-# Function to ask the user if they want to enable experimental Preload options
-function Get-ExperimentalOptionPreference {
-    # Create a new form
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = 'Experimental Options'
-    $form.Size = New-Object System.Drawing.Size(300,150)
-    $form.StartPosition = 'CenterScreen'
-
-    # Create a label
-    $label = New-Object System.Windows.Forms.Label
-    $label.Location = New-Object System.Drawing.Point(10,10)
-    $label.Size = New-Object System.Drawing.Size(280,20)
-    $label.Text = 'Do you want to enable experimental Preload options?'
-    $form.Controls.Add($label)
-
-    # Create Yes button
-    $yesButton = New-Object System.Windows.Forms.Button
-    $yesButton.Location = New-Object System.Drawing.Point(50,50)
-    $yesButton.Size = New-Object System.Drawing.Size(75,23)
-    $yesButton.Text = 'Yes'
-    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
-    $form.Controls.Add($yesButton)
-
-    # Create No button
-    $noButton = New-Object System.Windows.Forms.Button
-    $noButton.Location = New-Object System.Drawing.Point(150,50)
-    $noButton.Size = New-Object System.Drawing.Size(75,23)
-    $noButton.Text = 'No'
-    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
-    $form.Controls.Add($noButton)
-
-    # Set the accept and cancel buttons for the form
-    $form.AcceptButton = $yesButton
-    $form.CancelButton = $noButton
-
-    # Show the form as a dialog and capture the result
-    $result = $form.ShowDialog()
-
-    # Return $true if the user clicked Yes, otherwise $false
-    return $result -eq [System.Windows.Forms.DialogResult]::Yes
-}
-
-# Call the function to prompt the user
-$enableExperimental = Get-ExperimentalOptionPreference
-
+# Experimental Settings.
 if ($enableExperimental) {
     # User chose to enable experimental options
     $experimentalCfgContent = @"
   
-;--Experimental--
+;--Experimental Settings--
 ;r_FourierShadowsPoolSize = 1024
 ;r_ShadowsPoolSize = 256
 ;r_gpumarkers = 0
@@ -1192,63 +1211,13 @@ e_StatObjPreload = 1
 
 "@
 
-    # Append the experimental settings to the user.cfg content
-    $userCfgContent += $experimentalCfgContent
-}
-$enableTopGraphicsChoice = "No"
-
-
-# Function to ask the user if they want top graphical settings
-function Get-TopGraphicalSettings {
-    # Create a new form
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = 'Top Graphical Settings'
-    $form.Size = New-Object System.Drawing.Size(300,150)
-    $form.StartPosition = 'CenterScreen'
-
-    # Create a label
-    $label = New-Object System.Windows.Forms.Label
-    $label.Location = New-Object System.Drawing.Point(10,10)
-    $label.Size = New-Object System.Drawing.Size(280,20)
-    $label.Text = 'Do you want to enable top graphical settings?'
-    $form.Controls.Add($label)
-
-    # Create Yes button
-    $yesButton = New-Object System.Windows.Forms.Button
-    $yesButton.Location = New-Object System.Drawing.Point(50,50)
-    $yesButton.Size = New-Object System.Drawing.Size(75,23)
-    $yesButton.Text = 'Yes'
-    $yesButton.DialogResult = [System.Windows.Forms.DialogResult]::Yes
-    $form.Controls.Add($yesButton)
-
-    # Create No button
-    $noButton = New-Object System.Windows.Forms.Button
-    $noButton.Location = New-Object System.Drawing.Point(150,50)
-    $noButton.Size = New-Object System.Drawing.Size(75,23)
-    $noButton.Text = 'No'
-    $noButton.DialogResult = [System.Windows.Forms.DialogResult]::No
-    $form.Controls.Add($noButton)
-
-    # Set the accept and cancel buttons for the form
-    $form.AcceptButton = $yesButton
-    $form.CancelButton = $noButton
-
-    # Show the form as a dialog and capture the result
-    $result = $form.ShowDialog()
-
-    # Return $true if the user clicked Yes, otherwise $false
-    return $result -eq [System.Windows.Forms.DialogResult]::Yes
+# Append the experimental settings to the user.cfg content
+  $userCfgContent += $experimentalCfgContent
 }
 
-# Ask the user if they want top graphical settings using the GUI function
-$enableTopGraphics = Get-TopGraphicalSettings
 
-# Output the result
-if ($enableTopGraphics) {
-    Write-Host "Top graphical settings have been enabled."
-} else {
-    Write-Host "Top graphical settings have not been enabled."
-}
+
+
 if ($enableTopGraphics -eq 0) {
 # User chose to enable top graphical settings
     $topGraphicsCfgContent = @"
@@ -1306,10 +1275,9 @@ r_ShadowBlur = 3                ; Selected shadow map screenspace blurring techn
 ;r.TSAA = 1
 "@
 
-    # Append the top graphical settings to the user.cfg content
-    $userCfgContent += $topGraphicsCfgContent
-
-    $enableTopGraphicsChoice = "Yes"
+ # Append the top graphical settings to the user.cfg content
+   $userCfgContent += $topGraphicsCfgContent
+    
 }
 
 # Write the User.cfg content to the file
@@ -1339,7 +1307,7 @@ Number of Physical CPU Cores: $($systemInfo.PhysicalCores)
 
         System RAM Allocated: $systemRAMChoice MB
  Video Card Memory Allocated: $videoCardMemoryMB MB
-        Graphics Quality Set: $graphicsQuality
+        Graphics Quality Set: $graphicsQualityPreference
      User Chose Top Graphics: $enableTopGraphicsChoice
 user.cfg has been updated with the new settings at $userCfgFilePath
 "@
