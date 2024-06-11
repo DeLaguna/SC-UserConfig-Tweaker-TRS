@@ -82,8 +82,6 @@ if ($currentPolicy -ne 'Unrestricted') {
     }
 }
 
-# Continue with the rest of script...
-
 # Get the path to the desktop
 $desktopPath = [Environment]::GetFolderPath("Desktop")
 
@@ -512,6 +510,46 @@ foreach ($exePath in $exePaths) {
         # User chose not to implement system tweaks
         Write-Host "No system tweaks have been made."
     }
+}
+
+# Function to get the 95% of biggest video card memory 
+function Get-VideoCardMemory {
+    # Get all video controllers
+    $videoControllers = Get-CimInstance Win32_VideoController
+
+    # Sort video controllers by VRAM size in descending order
+    $sortedVideoControllers = $videoControllers | Sort-Object -Property AdapterRAM -Descending
+
+    # Select the video card with the largest VRAM
+    $largestVRAMVideoCard = $sortedVideoControllers | Select-Object -First 1
+
+    # Attempt to get the VRAM size from the registry for all video controllers
+    $qwMemorySizes = Get-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0*" -Name HardwareInformation.qwMemorySize -ErrorAction SilentlyContinue | Select-Object -ExpandProperty "HardwareInformation.qwMemorySize"
+
+    # If there are multiple entries, select the largest one
+    $largestQwMemorySize = if ($qwMemorySizes -and $qwMemorySizes.Count -gt 0) {
+        ($qwMemorySizes | Measure-Object -Maximum).Maximum
+    } else {
+        $null
+    }
+
+    # If the registry query was successful and the VRAM size is larger than what Win32_VideoController reports, use it
+    $videoCardMemoryMB = if ($largestQwMemorySize -and $largestQwMemorySize -gt $largestVRAMVideoCard.AdapterRAM) {
+        [math]::round($largestQwMemorySize / 1MB)
+    } else {
+        [math]::round($largestVRAMVideoCard.AdapterRAM / 1MB)
+    }
+
+    # Calculate 95% of the video card memory
+    $videoCardMemoryMB95 = [int][math]::truncate($videoCardMemoryMB * 0.95)
+
+    # Return the video card information with the calculated VRAM size
+    $videoCardInfo = [PSCustomObject] @{
+        Model      = $largestVRAMVideoCard.Caption
+        "Selected VRAM, MB" = $videoCardMemoryMB95
+    }
+
+    return $videoCardInfo
 }
 
 
