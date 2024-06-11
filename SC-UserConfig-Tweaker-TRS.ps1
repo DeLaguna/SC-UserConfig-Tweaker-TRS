@@ -38,15 +38,15 @@ $remoteScriptUrl = "https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Twe
 # Define the path to the local script
 $localScriptPath = Join-Path $PSScriptRoot "SC-UserConfig-Tweaker-TRS.ps1"
 
-# Check if the local script exists and is not empty
-if (Test-Path $localScriptPath -and (Get-Content $localScriptPath)) {
+# Check if the local script exists
+if (Test-Path $localScriptPath) {
     # Get the content of the local script
     $localScriptContent = Get-Content -Path $localScriptPath -Raw
 
     # Get the version of the local script
     $localVersion = Get-ScriptVersion -scriptContent $localScriptContent
 } else {
-    Write-Output "Local script not found or is empty. Running the remote script."
+    Write-Output "Local script not found. Running the remote script."
     # Download and execute the remote script content
     $webClient = New-Object System.Net.WebClient
     $remoteScriptContent = $webClient.DownloadString($remoteScriptUrl)
