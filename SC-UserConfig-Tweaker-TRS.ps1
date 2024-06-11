@@ -1,5 +1,5 @@
 # Star Citizen User.cfg Optimizer
-# Version: 2024.06.11-0640-Alpha
+# Version: 2024.06.11-0645-Beta
 # Created by TheRealSarcasmO
 # https://linktr.ee/TheRealSarcasmO
 
@@ -476,8 +476,8 @@ function Implement-SystemTweaks {
 
         # GameMode, GameBar, and Game DVR Settings
         Safe-SetRegistryProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" "AppCaptureEnabled" 0
-        ;Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AllowAutoGameMode" 0
-        ;Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 0
+        Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AllowAutoGameMode" 1
+        Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 1
 
         # Other system tweaks go here...
 
@@ -561,46 +561,6 @@ foreach ($exePath in $exePaths) {
     }
 }
 
-function Get-VideoCardMemory {
-    # Get all video controllers
-    $videoControllers = Get-CimInstance Win32_VideoController
-
-    # Sort video controllers by VRAM size in descending order
-    $sortedVideoControllers = $videoControllers | Sort-Object -Property AdapterRAM -Descending
-
-    # Select the video card with the largest VRAM
-    $largestVRAMVideoCard = $sortedVideoControllers | Select-Object -First 1
-
-    # Attempt to get the VRAM size from the registry for all video controllers
-    $qwMemorySizes = Get-ItemProperty -Path "HKLM:\SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0*" -Name HardwareInformation.qwMemorySize -ErrorAction SilentlyContinue | Select-Object -ExpandProperty "HardwareInformation.qwMemorySize"
-
-    # If there are multiple entries, select the largest one
-    $largestQwMemorySize = if ($qwMemorySizes -and $qwMemorySizes.Count -gt 0) {
-        ($qwMemorySizes | Measure-Object -Maximum).Maximum
-    } else {
-        $null
-    }
-
-    # If the registry query was successful and the VRAM size is larger than what Win32_VideoController reports, use it
-    $videoCardMemoryMB = if ($largestQwMemorySize -and $largestQwMemorySize -gt $largestVRAMVideoCard.AdapterRAM) {
-        [math]::round($largestQwMemorySize / 1MB)
-    } else {
-        [math]::round($largestVRAMVideoCard.AdapterRAM / 1MB)
-    }
-
-    # Calculate 95% of the VRAM size
-    $selectedVRAM = [int][math]::truncate($videoCardMemoryMB * 0.95)
-
-    # Create a custom object to hold the video card model and VRAM in MB
-    $videoCardInfo = [PSCustomObject] @{
-        Model = $largestVRAMVideoCard.Name
-        VRAM_MB = $videoCardMemoryMB
-        'Selected VRAM, MB' = $selectedVRAM
-    }
-
-    # Return the custom object
-    return $videoCardInfo
-}
 
 function Get-SystemRAM {
     # Get the total memory and available memory
@@ -873,8 +833,6 @@ $liveFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\"
 # Retrieve and set system information
 $systemInfo = Get-SystemInfo
 $systemRAMChoice = $($ramInfo.SelectedRAM_MB)
-Write-Host " $($ramInfo.SelectedRAM_MB) MB"
-Write-Host " $systemRAMChoice MB"
 $videoCardMemoryMB = $($selectedVRAMCardInfo.'Selected VRAM, MB')
 $maxReadSpeedMB = Get-HDDMaxReadSpeed
 $r_MultiGPU = Get-MultiGPUStatus
@@ -883,16 +841,12 @@ $maxRefreshRate = Get-MaxRefreshRate
 # Call the function to create the CPU optimized section config string
 $cpuOptimizedConfigString = Add-CPUOptimizedSectionToUserConfigContent
 
-
-
 # FPS Display Preference
 if ($displayInfoSetting -ne $null) {
     Write-Host "Selected FPS display preference: $($displayInfoChoices[$displayInfoSetting])"
 } else {
     Write-Host "No FPS display preference was selected."
 }
-
-
 
 # System Memory
 if ($systemRAMChoice -ne $null) {
@@ -937,7 +891,6 @@ if ($enableTopGraphics -eq 1) {
 $rsiInstallPath = "$rsiFolderPath\StarCitizen\LIVE"
 $rsiLauncherPath = "$rsiFolderPath\RSI Launcher"
 #$diskInfo = Get-DiskInfoForPath -Path $rsiInstallPath
-
  
 # Show user information of system info properties:
 Write-Host "                    Username: $($systemInfo.Username)"
@@ -956,7 +909,7 @@ Write-Host "   The Max Refreshrate found: $maxRefreshRate Mhz"
 # Info to user.
 Write-Host "          :Video Card with the largest VRAM:"
 Write-Host "                       Model: $($selectedVRAMCardInfo.Model)"
-Write-Host "               Detected VRAM: $($selectedVRAMCardInfo.VRAM_MB) MB"
+Write-Host "               Detected VRAM: $($selectedVRAMCardInfo.'VRAM, MB') MB"
 Write-Host "               Selected VRAM: $($selectedVRAMCardInfo.'Selected VRAM, MB') MB"
 
 if ($rsiFolderPath) {
@@ -1045,7 +998,7 @@ $userCfgContent = @"
 ;              95% of Free System RAM: $($ramInfo.SelectedRAM_MB) MB
 
 ;                    Video Card Model: $($selectedVRAMCardInfo.Model)
-;                       Detected VRAM: $($selectedVRAMCardInfo.VRAM_MB) MB
+;                       Detected VRAM: $($selectedVRAMCardInfo.'VRAM, MB') MB
 ;         Video Card Memory allocated: $($selectedVRAMCardInfo.'Selected VRAM, MB') MB
 
 ;        Graphics Preference Selected: $graphicsQualityPreference
