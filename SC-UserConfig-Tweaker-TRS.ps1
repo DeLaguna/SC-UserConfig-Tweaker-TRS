@@ -546,6 +546,7 @@ function Get-VideoCardMemory {
     # Return the video card information with the calculated VRAM size
     $videoCardInfo = [PSCustomObject] @{
         Model      = $largestVRAMVideoCard.Caption
+        "VRAM, MB" =$videoCardMemoryMB
         "Selected VRAM, MB" = $videoCardMemoryMB95
     }
 
@@ -824,7 +825,8 @@ $liveFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\"
 # Retrieve and set system information
 $systemInfo = Get-SystemInfo
 $systemRAMChoice = $($ramInfo.SelectedRAM_MB)
-$videoCardMemoryMB = $($selectedVRAMCardInfo.'Selected VRAM, MB')
+$videoCardMemoryMB = $($selectedVRAMCardInfo.'VRAM, MB')
+$videoCardMemoryMB95 = $($selectedVRAMCardInfo.'Selected VRAM, MB')
 $maxReadSpeedMB = Get-HDDMaxReadSpeed
 $r_MultiGPU = Get-MultiGPUStatus
 $maxRefreshRate = Get-MaxRefreshRate
@@ -900,8 +902,8 @@ Write-Host "   The Max Refreshrate found: $maxRefreshRate Mhz"
 # Info to user.
 Write-Host "          :Video Card with the largest VRAM:"
 Write-Host "                       Model: $($selectedVRAMCardInfo.Model)"
-Write-Host "               Detected VRAM: $($selectedVRAMCardInfo.'VRAM, MB') MB"
-Write-Host "               Selected VRAM: $($selectedVRAMCardInfo.'Selected VRAM, MB') MB"
+Write-Host "               Detected VRAM: $videoCardMemoryMB
+Write-Host "               Selected VRAM: $videoCardMemoryMB95
 
 if ($rsiFolderPath) {
     # Define the path to the User.cfg and Game.cfg file using the found RSI path
@@ -989,9 +991,8 @@ $userCfgContent = @"
 ;              95% of Free System RAM: $($ramInfo.SelectedRAM_MB) MB
 
 ;                    Video Card Model: $($selectedVRAMCardInfo.Model)
-;                       Detected VRAM: $($selectedVRAMCardInfo.'VRAM, MB') MB
-;         Video Card Memory allocated: $($selectedVRAMCardInfo.'Selected VRAM, MB') MB
-
+;                       Detected VRAM: $videoCardMemoryMB
+;         Video Card Memory allocated: $videoCardMemoryMB95
 ;        Graphics Preference Selected: $graphicsQualityPreference
 ;                    Top Graphics Set: $enableTopGraphicsChoice
 ;                     Fastest Monitor: $maxRefreshRate Mhz
