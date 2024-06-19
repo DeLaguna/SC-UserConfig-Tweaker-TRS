@@ -14,6 +14,14 @@ Write-Output "# While this script does look for core count and optimize for it, 
 Write-Output "#                                                                                                                             "
 Write-Output "# Script is best Run from Administrator:Windows PowerShell                                                                    "
 Write-Output "##############################################################################################################################"
+$timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
+$tempFolder = "C:\temp"
+
+$Logfile = "$tempFolder\Star Citizen User.cfg Optimizer Web-$timestamp.txt"
+# Start Log
+Start-Transcript -Path $Logfile
+
+Write-Host "Logging started Started: " $Logfile
 
 $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
 Invoke-Expression $($ScriptFromGitHub.Content)
