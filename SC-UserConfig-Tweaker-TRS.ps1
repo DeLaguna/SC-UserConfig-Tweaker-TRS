@@ -82,68 +82,42 @@ if ($currentPolicy -ne 'Unrestricted') {
     }
 }
 
-# Get the path to the desktop
-$desktopPath = [Environment]::GetFolderPath("Desktop")
+#################################################
+# Create Shortcut on the desktop
+#
+$desktopPath = "$($env:USERPROFILE)\Desktop"
 
-# Define the shortcut file path
-$shortcutFilePath = Join-Path -Path $desktopPath -ChildPath "PowerShell ISE.lnk"
+# Specify the target PowerShell command
+$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://bit.ly/SC-user-cfg-TRS-web | iex'"
 
-# Check if the shortcut already exists
-if (!(Test-Path -Path $shortcutFilePath)) {
-    try {
-        # Create a new WScript Shell object
-        $wshShell = New-Object -ComObject WScript.Shell
+# Specify the path for the shortcut
+$shortcutPath = Join-Path $desktopPath 'SC-UserConfig-Tweaker-TRS-Web.lnk'
 
-        # Create a new shortcut
-        $shortcut = $wshShell.CreateShortcut($shortcutFilePath)
+# Create a shell object
+$shell = New-Object -ComObject WScript.Shell
 
-        # Set the target path to PowerShell ISE
-        $shortcut.TargetPath = "C:\Windows\System32\cmd.exe"
+# Create a shortcut object
+$shortcut = $shell.CreateShortcut($shortcutPath)
 
-        # Set the arguments to run PowerShell ISE as administrator
-        $shortcut.Arguments = "/c start powershell_ise.exe"
+# Set properties of the shortcut
+$shortcut.TargetPath = "powershell.exe"
+$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
 
-        # Save the shortcut
-        $shortcut.Save()
+# Save the shortcut
+$shortcut.Save()
 
-        Write-Host "Shortcut created at: $shortcutFilePath"
-    } catch {
-        Write-Host "Failed to create shortcut at: $shortcutFilePath"
-    }
-} else {
-    Write-Host "Shortcut already exists at: $shortcutFilePath"
-}
+# Make the shortcut have 'Run as administrator' property on
+$bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
 
+# Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
+$bytes[0x15] = $bytes[0x15] -bor 0x20
+[System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
 
-# Define the shortcut file path
-$shortcutFilePath = Join-Path -Path $desktopPath -ChildPath "SC-UserConfig-Tweaker-TRS-Web.lnk"
+Write-Host "Shortcut created at: $shortcutPath"
 
-# Check if the shortcut already exists
-if (!(Test-Path -Path $shortcutFilePath)) {
-    try {
-        # Create a new WScript Shell object
-        $wshShell = New-Object -ComObject WScript.Shell
-
-        # Create a new shortcut
-        $shortcut = $wshShell.CreateShortcut($shortcutFilePath)
-
-        # Set the target path to cmd.exe
-        $shortcut.TargetPath = "C:\Windows\System32\cmd.exe"
-
-        # Set the arguments to run PowerShell as administrator and execute the command
-        $shortcut.Arguments = "/c start powershell -Command {irm https://bit.ly/SC-user-cfg-TRS-web | iex}"
-
-        # Save the shortcut
-        $shortcut.Save()
-
-        Write-Host "Shortcut created at: $shortcutFilePath"
-    } catch {
-        Write-Host "Failed to create shortcut at: $shortcutFilePath"
-    }
-} else {
-    Write-Host "Shortcut already exists at: $shortcutFilePath"
-}
-
+# 
+# Shortcut create on the desktop
+# ##################################################
 
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
 
