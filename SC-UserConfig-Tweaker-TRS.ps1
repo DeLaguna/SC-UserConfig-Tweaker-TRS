@@ -1,6 +1,6 @@
 Write-Output "##############################################################################################################################"
 Write-Output "# Star Citizen User.cfg Optimizer                                                                                             "
-Write-Output "# Version: 2024.06.11-0751-Alpha"
+Write-Output "# Version: 2024.06.24-0536-Alpha"
 Write-Output "# Created by TheRealSarcasmO                                                                                                  "
 Write-Output "# https://linktr.ee/TheRealSarcasmO                                                                                           "
 Write-Output "#                                                                                                                             "
@@ -114,6 +114,37 @@ if (!(Test-Path -Path $shortcutFilePath)) {
     Write-Host "Shortcut already exists at: $shortcutFilePath"
 }
 
+
+# Define the shortcut file path
+$shortcutFilePath = Join-Path -Path $desktopPath -ChildPath "SC-UserConfig-Tweaker-TRS-Web.lnk"
+
+# Check if the shortcut already exists
+if (!(Test-Path -Path $shortcutFilePath)) {
+    try {
+        # Create a new WScript Shell object
+        $wshShell = New-Object -ComObject WScript.Shell
+
+        # Create a new shortcut
+        $shortcut = $wshShell.CreateShortcut($shortcutFilePath)
+
+        # Set the target path to cmd.exe
+        $shortcut.TargetPath = "C:\Windows\System32\cmd.exe"
+
+        # Set the arguments to run PowerShell as administrator and execute the command
+        $shortcut.Arguments = "/c start powershell -Command {irm https://bit.ly/SC-user-cfg-TRS-web | iex}"
+
+        # Save the shortcut
+        $shortcut.Save()
+
+        Write-Host "Shortcut created at: $shortcutFilePath"
+    } catch {
+        Write-Host "Failed to create shortcut at: $shortcutFilePath"
+    }
+} else {
+    Write-Host "Shortcut already exists at: $shortcutFilePath"
+}
+
+
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
 
 # Function to get system information
@@ -181,8 +212,8 @@ function Backup-Registry {
         $backupFilePath = Join-Path -Path $backupFolderPath -ChildPath "RegistryBackup_$timestamp.reg"
 
         # Export the entire registry to the backup file
-        reg export HKLM $backupFilePath /y
-        reg export HKCU $backupFilePath /y
+        reg export HKLM $backupFilePath /y #Local Machine Backup
+        reg export HKCU $backupFilePath /y #Current User Backup
 
         Write-Host "Registry has been backed up to: $backupFilePath"
     } catch {
@@ -1339,4 +1370,8 @@ if (Test-Path -Path $shaderFolderPath) {
 
     # Open the user.cfg file with the default editor
     Invoke-Item -Path $userCfgFilePath
+
+
+# Pause the script for 5 seconds
+Start-Sleep -Seconds 60
 # End of the script
