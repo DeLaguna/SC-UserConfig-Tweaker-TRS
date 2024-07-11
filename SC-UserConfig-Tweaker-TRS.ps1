@@ -18,7 +18,7 @@ Write-Output "##################################################################
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
-##############################################################################################################################
+##############################################################################################
 Write-Output "==============================================================================="
 
 
@@ -1001,9 +1001,12 @@ $userCfgContent = @"
 ;        Graphics Preference Selected: $graphicsQualityPreference
 ;                    Top Graphics Set: $enableTopGraphicsChoice
 ;                     Fastest Monitor: $maxRefreshRate Mhz
+;
+;                Experimental Options: $enableExperimental
+;
+;                            TOS accepted by User
+;                         --Enables in-game console--
 
-; TOS accepted by User
-;--Enables in-game console--
 ;--By default, you are restricted to only a handful of console commands you can use.--
 con_restricted = 0
 
@@ -1205,14 +1208,13 @@ e_StatObjPreload = 1
   $userCfgContent += $experimentalCfgContent
 }
 
-
-
-
 if ($enableTopGraphics -eq 0) {
 # User chose to enable top graphical settings
     $topGraphicsCfgContent = @"
 
 ;--Top Graphics Settings--
+
+r_Gen12	2	;Setting for the new Gen12 renderer.0 = Off (use old renderer), 1 = Hybrid old and new Gen12 renderer, 2 = Gen12 renderer only
 
 ;-- This Setting shows info on your FPS, Memory Usage & Frame Latency in-game, 1 shows just FPS, 4shows the most info.
 r_DisplayInfo = $displayInfoSetting
