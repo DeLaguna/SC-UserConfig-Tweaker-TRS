@@ -1036,7 +1036,7 @@ r_VSync = 0
 ;--Performance Settings--
 r_MultiGPU = $r_MultiGPU
 sys_maxIdleFps = 30
-
+                                                                                                                         
 "@
 
 # Append the CPU optimized section config string to the $userCfgContent variable
