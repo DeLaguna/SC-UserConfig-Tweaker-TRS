@@ -896,7 +896,7 @@ Write-Host "                 System Name: $($systemInfo.SystemName)"
 Write-Host "            Operating System: $($systemInfo.OperatingSystem)"
 Write-Host "          CPU Name and Brand: $($systemInfo.CPUNameAndBrand)"
 Write-Host "Number of Physical CPU Cores: $($systemInfo.PhysicalCores)"
-Write-Host "               Max CPU Speed: $($systemInfo.MaxCPUSpeedGHz) GHz"
+Write-Host "                   CPU Speed: $($systemInfo.MaxCPUSpeedGHz) GHz"
 Write-Host "            Total System RAM: $($ramInfo.TotalRAM_MB) MB"
 Write-Host "             Free System RAM: $($ramInfo.FreeRAM_MB) MB"
 Write-Host "      95% of Free System RAM: $($ramInfo.SelectedRAM_MB) MB"
@@ -1201,6 +1201,7 @@ e_PreloadMaterials = 1
 sys_PakStreamCache = 1
 sys_preload = 1
 e_StatObjPreload = 1
+r_Gen12 = 2 ; Setting for the new Gen12 renderer. (0 = Off (use old renderer), 1 = Hybrid old and new Gen12 renderer, 2 = Gen12 renderer only)
 
 "@
 
