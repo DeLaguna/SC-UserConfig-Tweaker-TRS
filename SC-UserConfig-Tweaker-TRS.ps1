@@ -1,27 +1,25 @@
-Write-Output "##############################################################################################################################"
-Write-Output "# Star Citizen User.cfg Optimizer                                                                                             "
-Write-Output "# Version: 2024.06.24-0536-Alpha"
-Write-Output "# Created by TheRealSarcasmO                                                                                                  "
-Write-Output "# https://linktr.ee/TheRealSarcasmO                                                                                           "
-Write-Output "#                                                                                                                             "
-Write-Output "# Inspired by ... emilwojcik93, and ... Isaard, and ...                                                                       "
-Write-Output "# ORG: Affordable Multi Role Space Support                                                                                    "
-Write-Output "# https://robertsspaceindustries.com/enlist?referral=STAR-BV4X-S3HG                                                           "
-Write-Output "#                                                                                                                             "
-Write-Output "# TRS bringing you a script with a graphical twist for the discerning meatbag.                                                "
-Write-Output "# Depending on what cvars, CIG allow to be used, this script effects will work more or less.                                  "
-Write-Output "# While this script does look for core count and optimize for it, it is assumed that the user has at least 4 physical cores.  "
-Write-Output "#                                                                                                                             "
-Write-Output "# Script is best Run from Administrator:Windows PowerShell                                                                    "
-Write-Output "##############################################################################################################################"
+Write-Output "##############################################################################################"
+Write-Output "# Star Citizen User.cfg Optimizer                                                             "
+Write-Output "# Version: 2024.07.11-0333-Alpha"
+Write-Output "# Created by TheRealSarcasmO                                                                  "
+Write-Output "# https://linktr.ee/TheRealSarcasmO                                                           "
+Write-Output "#                                                                                             "
+Write-Output "# Inspired by ... emilwojcik93, and ... Isaard, and ...                                       "
+Write-Output "# ORG: Affordable Multi Role Space Support                                                    "
+Write-Output "# https://robertsspaceindustries.com/enlist?referral=STAR-BV4X-S3HG                           "
+Write-Output "#                                                                                             "
+Write-Output "# TRS bringing you a script with a graphical twist for the discerning meatbag.                "
+Write-Output "# Depending on what cvars, CIG allow to be used, this script effects will work more or less.  "
+Write-Output "# While this script does look for core count and optimize for it, it is assumed that the      "
+Write-Output "# user has at least 4 physical cores.                                                         "
+Write-Output "# Script is best Run from Administrator:Windows PowerShell                                    "
+Write-Output "##############################################################################################"
 
 # Load the necessary assembly for Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
-##############################################################################################
-Write-Output "==============================================================================="
-
-
+#############################################################################################################
+Write-Output "=============================================================================================="
 
 # Pause the script for 5 seconds
 Start-Sleep -Seconds 5
@@ -31,17 +29,24 @@ Write-Host @"
 DISCLAIMER OF ALL THE THINGS THAT COULD POSSIBLY GO WRONG (BUT PROBABLY WON'T)
 ===============================================================================
 
-Hello, brave user! By running this script, you're embarking on a thrilling adventure filled with system tweaks, performance enhancements, and the occasional existential crisis when you wonder why you're trusting a script you found on the internet. But fear not! This script has been carefully crafted by a team of highly trained meatbag... err... I mean, professional developer.
+Hello, brave user! By running this script, you're embarking on a thrilling adventure filled with system tweaks, 
+performance enhancements, and the occasional existential crisis when you wonder why you're trusting a script you 
+found on the internet. But fear not! This script has been carefully crafted by a team of highly trained meatbag... 
+err... I mean, professional developer.
 
 Now, onto the serious stuff:
 
-1. This script will make changes to your system. It's kind of the point. But hey, we're backing up some stuff, so that's nice, right?
+1. This script will make changes to your system. It's kind of the point. But hey, we're backing up some stuff, 
+so that's nice, right?
 
-2. We've done our best to ensure this script won't unleash a horde of nanobots to turn your computer into a fancy paperweight, but we can't make any guarantees. Computers are fickle beasts.
+2. We've done our best to ensure this script won't unleash a horde of nanobots to turn your computer into a 
+fancy paperweight, but we can't make any guarantees. Computers are fickle beasts.
 
-3. If something does go wrong (but remember, it probably won't), we're not liable. Like, at all. We're over here, you're over there, and there's a whole lot of internet in between.
+3. If something does go wrong (but remember, it probably won't), we're not liable. Like, at all. We're over here,
+you're over there, and there's a whole lot of internet in between.
 
-4. If you don't agree with these terms, or you suddenly feel a sense of impending doom, now would be a good time to press 'Ctrl+C' and walk away. Maybe go for a walk. Read a book. Contemplate the meaning of life.
+4. If you don't agree with these terms, or you suddenly feel a sense of impending doom, now would be a good time 
+to press 'Ctrl+C' and walk away. Maybe go for a walk. Read a book. Contemplate the meaning of life.
 
 Do you accept these terms and wish to continue? (y/n)
 "@
@@ -900,7 +905,7 @@ Write-Host "                   CPU Speed: $($systemInfo.MaxCPUSpeedGHz) GHz"
 Write-Host "            Total System RAM: $($ramInfo.TotalRAM_MB) MB"
 Write-Host "             Free System RAM: $($ramInfo.FreeRAM_MB) MB"
 Write-Host "      95% of Free System RAM: $($ramInfo.SelectedRAM_MB) MB"
-Write-Host "         Display Info Choice: $displayInfoSetting (This will be 1 for Low, 2 for Medium, 3 for High, and 4 for Very High)"
+Write-Host "         Display Info Choice: $displayInfoSetting (This will be 0 for hide, 1 for Low, 2 for Medium, 3 for High, and 4 for Very High)"
 Write-Host " Display Session Info Choice: $displaySessionInfoSetting"
 Write-Host "   The Max Refreshrate found: $maxRefreshRate Mhz"
 
