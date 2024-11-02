@@ -90,38 +90,39 @@ if ($currentPolicy -ne 'Unrestricted') {
 #################################################
 # Create Shortcut on the desktop
 #
-$desktopPath = "$($env:USERPROFILE)\Desktop"
+#$desktopPath = "$($env:USERPROFILE)\Desktop"
 
 # Specify the target PowerShell command
-$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://bit.ly/SC-user-cfg-TRS-web | iex'"
+#$command = "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command 'irm https://bit.ly/SC-user-cfg-TRS-web | iex'"
 
 # Specify the path for the shortcut
-$shortcutPath = Join-Path $desktopPath 'SC-UserConfig-Tweaker-TRS-Web.lnk'
+#$shortcutPath = Join-Path $desktopPath 'SC-UserConfig-Tweaker-TRS-Web.lnk'
 
 # Create a shell object
-$shell = New-Object -ComObject WScript.Shell
+#$shell = New-Object -ComObject WScript.Shell
 
 # Create a shortcut object
-$shortcut = $shell.CreateShortcut($shortcutPath)
+#$shortcut = $shell.CreateShortcut($shortcutPath)
 
 # Set properties of the shortcut
-$shortcut.TargetPath = "powershell.exe"
-$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
+#$shortcut.TargetPath = "powershell.exe"
+#$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -Command `"$command`""
 
 # Save the shortcut
-$shortcut.Save()
+#$shortcut.Save()
 
 # Make the shortcut have 'Run as administrator' property on
-$bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
+#$bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
 
 # Set byte value at position 0x15 in hex, or 21 in decimal, from the value 0x00 to 0x20 in hex
-$bytes[0x15] = $bytes[0x15] -bor 0x20
-[System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
+#$bytes[0x15] = $bytes[0x15] -bor 0x20
 
-Write-Host "Shortcut created at: $shortcutPath"
+#[System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
 
-# 
-# Shortcut create on the desktop
+#Write-Host "Shortcut created at: $shortcutPath"
+
+
+# Shortcut created on the desktop
 # ##################################################
 
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
