@@ -262,7 +262,7 @@ function Get-MaxRefreshRate {
 
 # Function to get the maximum speed of HDD where the game is installed
 function Get-HDDMaxReadSpeed {
-    $driveInfo = Get-WmiObject Win32_LogicalDisk | Where-Object { $4.0_PREVIEWFolderPath.StartsWith($_.DeviceID) }
+    $driveInfo = Get-WmiObject Win32_LogicalDisk | Where-Object { $LiveFolderPath.StartsWith($_.DeviceID) }
     $diskPerformance = winsat disk -drive $driveInfo.DeviceID[0] | Out-String
     if ($diskPerformance -match 'Disk  Sequential 64.0 Read\s+(\d+\.\d+) MB/s') {
         $maxReadSpeedMB = [math]::Floor($matches[1])
