@@ -36,6 +36,7 @@ $buttonLive.Location = New-Object Drawing.Point(10,20)
 $buttonLive.Size = New-Object Drawing.Size(100,30)
 $buttonLive.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest  https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
+    Invoke-Expression $($ScriptFromGitHub.Content)
     $form.Close()
 })
 $form.Controls.Add($buttonLive)
@@ -46,6 +47,7 @@ $buttonPTU.Location = New-Object Drawing.Point(10,60)
 $buttonPTU.Size = New-Object Drawing.Size(100,30)
 $buttonPTU.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest #irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/PTU/SC-UserConfig-Tweaker-TRS.ps1 | iex"
+    Invoke-Expression $($ScriptFromGitHub.Content)
     $form.Close()
 })
 $form.Controls.Add($buttonPTU)
@@ -56,6 +58,7 @@ $buttonEPTU.Location = New-Object Drawing.Point(10,100)
 $buttonEPTU.Size = New-Object Drawing.Size(100,30)
 $buttonEPTU.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest "" #https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/EPTU/SC-UserConfig-Tweaker-TRS.ps1
+    Invoke-Expression $($ScriptFromGitHub.Content)
     $form.Close()
 })
 $form.Controls.Add($buttonEPTU)
@@ -66,6 +69,7 @@ $buttonPreview.Location = New-Object Drawing.Point(10,140)
 $buttonPreview.Size = New-Object Drawing.Size(100,30)
 $buttonPreview.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/4.0_PREVIEW-TEST/SC-UserConfig-Tweaker-TRS.ps1
+    Invoke-Expression $($ScriptFromGitHub.Content)
     $form.Close()
 })
 $form.Controls.Add($buttonPreview)
