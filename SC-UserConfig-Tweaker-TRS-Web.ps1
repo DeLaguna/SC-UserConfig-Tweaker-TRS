@@ -35,7 +35,7 @@ $buttonLive.Text = "Live"
 $buttonLive.Location = New-Object Drawing.Point(10,20)
 $buttonLive.Size = New-Object Drawing.Size(100,30)
 $buttonLive.Add_Click({
-    $ScriptFromGitHub = Invoke-WebRequest  https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/Live/SC-UserConfig-Tweaker-TRS.ps1
+    $ScriptFromGitHub = Invoke-WebRequest  https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
     $form.Close()
 })
 $form.Controls.Add($buttonLive)
@@ -79,5 +79,5 @@ $form.Controls.Add($buttonComingSoon)<#  #>    #>
 
 [void]$form.ShowDialog()
 
-$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
+#$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
 Invoke-Expression $($ScriptFromGitHub.Content)
