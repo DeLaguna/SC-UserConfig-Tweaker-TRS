@@ -144,17 +144,12 @@ function Get-SystemInfo {
 }
 
 # Function to search for the 'Roberts Space Industries' folder in Program Files and drive roots
- copy
-powershell
+#copy
+#powershell
 
+# Function to find the RSI path
 function Find-RSIPath {
-    # Attempt to find the folder in the Program Files directories first
-    $programFilesPaths = @(
-        [Environment]::GetFolderPath('ProgramFiles'),
-        [Environment]::GetFolderPath('ProgramFilesX86')
-    )
-
-    # If not found, search the root of all drives (up to 3 directories deep)
+    # Search the root of all drives (up to 3 directories deep)
     $driveRoots = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root
     foreach ($root in $driveRoots) {
         $rsiPath = Get-ChildItem -Path $root -Recurse -Directory -Depth 3 -ErrorAction SilentlyContinue | 
@@ -166,7 +161,7 @@ function Find-RSIPath {
         }
     }
 
-    # If still not found, prompt the user for the installation path
+    # If not found, prompt the user for the installation path
     while ($true) {
         $userInputPath = Read-Host "Unable to find the 'Roberts Space Industries' folder. Please enter the installation path or type 'exit' to cancel"
         if ($userInputPath -eq 'exit') {
@@ -213,6 +208,7 @@ function List-AllFolders {
         return $null
     }
 }
+
 
 # Function to backup the registry
 function Backup-Registry {
