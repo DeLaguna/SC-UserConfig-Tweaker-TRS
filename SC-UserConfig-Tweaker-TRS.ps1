@@ -29,6 +29,8 @@ Write-Host @"
 DISCLAIMER OF ALL THE THINGS THAT COULD POSSIBLY GO WRONG (BUT PROBABLY WON'T)
 ===============================================================================
 
+ Star Citizen User.cfg Optimizer  - 4.0_PREVIEW_TEST      
+
 Hello, brave user! By running this script, you're embarking on a thrilling adventure filled with system tweaks, 
 performance enhancements, and the occasional existential crisis when you wonder why you're trusting a script you 
 found on the internet. But fear not! This script has been carefully crafted by a meatbag... err... I mean, developer.
