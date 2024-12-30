@@ -48,7 +48,7 @@ $buttonPTU.Location = New-Object Drawing.Point(10,60)
 $buttonPTU.Size = New-Object Drawing.Size(200,30)
 $buttonPTU.Add_Click({
     $form.Hide() # Hide the form first
-    $ScriptFromGitHub = Invoke-WebRequest #irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/PTU/SC-UserConfig-Tweaker-TRS.ps1 | iex"
+    $ScriptFromGitHub = Invoke-WebRequest "" #irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/PTU/SC-UserConfig-Tweaker-TRS.ps1 | iex"
     Invoke-Expression $($ScriptFromGitHub.Content)
     $form.Close()
 })
