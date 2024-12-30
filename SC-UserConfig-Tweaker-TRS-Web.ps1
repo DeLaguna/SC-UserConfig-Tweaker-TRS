@@ -28,7 +28,7 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $form = New-Object Windows.Forms.Form
 $form.Text = "Choose Environment"
-$form.Size = New-Object Drawing.Size(400,150)
+$form.Size = New-Object Drawing.Size(200,400)
 
 $buttonLive = New-Object Windows.Forms.Button
 $buttonLive.Text = "Live"
