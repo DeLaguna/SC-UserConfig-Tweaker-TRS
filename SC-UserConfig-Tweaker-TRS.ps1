@@ -144,23 +144,23 @@ function Get-SystemInfo {
 }
 
 # Function to search for the 'Roberts Space Industries' folder in Program Files and drive roots
+ copy
+powershell
+
 function Find-RSIPath {
     # Attempt to find the folder in the Program Files directories first
     $programFilesPaths = @(
-        [Environment]::GetFolderPath('ProgramFiles'),[Environment]::GetFolderPath('ProgramFilesX86')
+        [Environment]::GetFolderPath('ProgramFiles'),
+        [Environment]::GetFolderPath('ProgramFilesX86')
     )
-    
-    foreach ($path in $programFilesPaths) {
-        $rsiPath = Get-ChildItem -Path $path -Recurse -Directory -Filter "Roberts Space Industries" -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
-        if ($rsiPath) {
-            return $rsiPath
-        }
-    }
 
-    # If not found, search the root of all drives
+    # If not found, search the root of all drives (up to 3 directories deep)
     $driveRoots = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root
     foreach ($root in $driveRoots) {
-        $rsiPath = Get-ChildItem -Path $root -Recurse -Directory -Filter "Roberts Space Industries" -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+        $rsiPath = Get-ChildItem -Path $root -Recurse -Directory -Depth 3 -ErrorAction SilentlyContinue | 
+            Where-Object { $_.Name -eq "Roberts Space Industries" } | 
+            Select-Object -First 1 -ExpandProperty FullName
+        
         if ($rsiPath) {
             return $rsiPath
         }
@@ -177,6 +177,40 @@ function Find-RSIPath {
         } else {
             Write-Host "The path entered does not exist. Please check the path and try again."
         }
+    }
+}
+
+# Function to list all folders in the Star Citizen directory
+function List-AllFolders {
+    param (
+        [string]$rsiPath
+    )
+    
+    # Get all directories in the RSI path
+    $folders = Get-ChildItem -Path $rsiPath -Directory
+
+    if ($folders.Count -eq 0) {
+        Write-Host "No folders found in the RSI path." -ForegroundColor Red
+        return $null
+    }
+
+    Write-Host "Available folders in the Star Citizen directory:" -ForegroundColor Green
+    for ($i = 0; $i -lt $folders.Count; $i++) {
+        Write-Host "$($i + 1): $($folders[$i].Name)" -ForegroundColor Yellow
+    }
+
+    $choice = Read-Host "Please enter the number of the folder you want to proceed with (or type 'exit' to cancel)"
+    
+    if ($choice -eq 'exit') {
+        Write-Host "User canceled the operation."
+        return $null
+    }
+
+    if ($choice -match '^\d+$' -and $choice -gt 0 -and $choice -le $folders.Count) {
+        return $folders[$choice - 1].FullName
+    } else {
+        Write-Host "Invalid choice. Please run the script again." -ForegroundColor Red
+        return $null
     }
 }
 
@@ -442,16 +476,34 @@ function Implement-SystemTweaks {
         Safe-SetRegistryProperty "HKCU:\Software\Microsoft\GameBar" "AutoGameModeEnabled" 1
 
         # Other system tweaks go here...
-
+################################################################################################
 # Get the RSI path
-$rsiPath = Find-RSIPath
+#$rsiPath = Find-RSIPath
 
 # If the RSI path is not found, exit the script
+#if (!$rsiPath) {
+#    Write-Host "Unable to find the RSI path. Exiting the script."
+#    exit
+# }
+#################################################################################################
+
+# Main script execution
+$rsiPath = Find-RSIPath
+
 if (!$rsiPath) {
     Write-Host "Unable to find the RSI path. Exiting the script."
     exit
 }
 
+$selectedFolder = List-AllFolders -rsiPath $rsiPath
+
+if ($selectedFolder) {
+    Write-Host "You selected the folder: $selectedFolder" -ForegroundColor Green
+    # Proceed with further actions on the selected folder...
+} else {
+    Write-Host "No folder was selected. Exiting the script."
+}
+#################################################################################################
 # Paths to the StarCitizen.exe and launcher
 $exePaths = @("$rsiInstallPath\Bin64\StarCitizen.exe", "$rsiLauncherPath\Launcher.exe")
 
