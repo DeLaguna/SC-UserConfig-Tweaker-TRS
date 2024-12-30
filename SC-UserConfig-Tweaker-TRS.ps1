@@ -262,7 +262,7 @@ function Get-MaxRefreshRate {
 
 # Function to get the maximum speed of HDD where the game is installed
 function Get-HDDMaxReadSpeed {
-    $driveInfo = Get-WmiObject Win32_LogicalDisk | Where-Object { $liveFolderPath.StartsWith($_.DeviceID) }
+    $driveInfo = Get-WmiObject Win32_LogicalDisk | Where-Object { $4.0_PREVIEWFolderPath.StartsWith($_.DeviceID) }
     $diskPerformance = winsat disk -drive $driveInfo.DeviceID[0] | Out-String
     if ($diskPerformance -match 'Disk  Sequential 64.0 Read\s+(\d+\.\d+) MB/s') {
         $maxReadSpeedMB = [math]::Floor($matches[1])
@@ -302,8 +302,8 @@ function Backup-KeybindsAndMappings {
     }
 
     # Define the source directories for keybinds and mappings
-    $keybindsSource = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\USER\Client\0\Profiles\default"
-    $mappingsSource = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\USER\Client\0\Controls\Mappings"
+    $keybindsSource = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\4.0_PREVIEW\USER\Client\0\Profiles\default"
+    $mappingsSource = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\4.0_PREVIEW\USER\Client\0\Controls\Mappings"
 
     # Copy the keybinds and mappings to the backup directories
     Copy-Item -Path $keybindsSource -Destination $keybindBackups -Recurse
@@ -831,7 +831,7 @@ $enableTopGraphics = Get-TopGraphicalSettings
 
 # Retrieve system information and user preferences
 $rsiFolderPath = Find-RSIPath
-$liveFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\"
+$liveFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\4.0_PREVIEW\"
 
 # Retrieve and set system information
 $systemInfo = Get-SystemInfo
@@ -892,7 +892,7 @@ if ($enableTopGraphics -eq 1) {
     $enableTopGraphicsChoice = "No"
 }
 
-$rsiInstallPath = "$rsiFolderPath\StarCitizen\LIVE"
+$rsiInstallPath = "$rsiFolderPath\StarCitizen\4.0_PREVIEW"
 $rsiLauncherPath = "$rsiFolderPath\RSI Launcher"
 #$diskInfo = Get-DiskInfoForPath -Path $rsiInstallPath
  
@@ -918,10 +918,10 @@ Write-Host "               Selected VRAM: $videoCardMemoryMB95
 
 if ($rsiFolderPath) {
     # Define the path to the User.cfg and Game.cfg file using the found RSI path
-    $userCfgFilePath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\user.cfg"
+    $userCfgFilePath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\4.0_PREVIEW\user.cfg"
     
-    #$userCfgFilePath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\USER\Client\0\user.cfg"
-    $gameCfgFilePath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\USER\Client\0\game.cfg"
+    #$userCfgFilePath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\4.0_PREVIEW\USER\Client\0\user.cfg"
+    $gameCfgFilePath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\4.0_PREVIEW\USER\Client\0\game.cfg"
     
     # Check if the user.cfg file exists and is writable
     if (Test-Path -Path $gameCfgFilePath) {
@@ -932,7 +932,7 @@ if ($rsiFolderPath) {
         }
 
 # Define the backup directory using the existing $rsiFolderPath variable
-$backupDirectory = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\LIVE\Backups"
+$backupDirectory = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\4.0_PREVIEW\Backups"
 
 # Check if the backup directory exists, if not, create it
 if (!(Test-Path -Path $backupDirectory)) {
@@ -1337,7 +1337,7 @@ if (Test-Path -Path $baseShaderCachePath) {
 }
 
 # Define the path to the Shader folder using the found RSI path
-$shaderFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "LIVE\Shader"
+$shaderFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "4.0_PREVIEW\Shader"
 
 # Check if the Shader folder exists
 if (Test-Path -Path $shaderFolderPath) {
