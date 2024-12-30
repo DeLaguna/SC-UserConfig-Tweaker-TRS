@@ -58,8 +58,8 @@ $buttonEPTU.Location = New-Object Drawing.Point(10,100)
 $buttonEPTU.Size = New-Object Drawing.Size(100,30)
 $buttonEPTU.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest "" #https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/EPTU/SC-UserConfig-Tweaker-TRS.ps1
-    Invoke-Expression $($ScriptFromGitHub.Content)
     $form.Close()
+    Invoke-Expression $($ScriptFromGitHub.Content)
 })
 $form.Controls.Add($buttonEPTU)
 
