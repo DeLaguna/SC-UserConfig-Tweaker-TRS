@@ -28,12 +28,12 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $form = New-Object Windows.Forms.Form
 $form.Text = "Choose Environment"
-$form.Size = New-Object Drawing.Size(200,400)
+$form.Size = New-Object Drawing.Size(250,250)
 
 $buttonLive = New-Object Windows.Forms.Button
 $buttonLive.Text = "Live"
 $buttonLive.Location = New-Object Drawing.Point(10,20)
-$buttonLive.Size = New-Object Drawing.Size(200,30)
+$buttonLive.Size = New-Object Drawing.Size(100,30)
 $buttonLive.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest  https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
     Invoke-Expression $($ScriptFromGitHub.Content)
@@ -44,7 +44,7 @@ $form.Controls.Add($buttonLive)
 $buttonPTU = New-Object Windows.Forms.Button
 $buttonPTU.Text = "PTU - Coming Soon"
 $buttonPTU.Location = New-Object Drawing.Point(10,60)
-$buttonPTU.Size = New-Object Drawing.Size(200,30)
+$buttonPTU.Size = New-Object Drawing.Size(100,30)
 $buttonPTU.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest #irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/PTU/SC-UserConfig-Tweaker-TRS.ps1 | iex"
     Invoke-Expression $($ScriptFromGitHub.Content)
@@ -55,18 +55,18 @@ $form.Controls.Add($buttonPTU)
 $buttonEPTU = New-Object Windows.Forms.Button
 $buttonEPTU.Text = "EPTU - Coming Soon"
 $buttonEPTU.Location = New-Object Drawing.Point(10,100)
-$buttonEPTU.Size = New-Object Drawing.Size(200,30)
+$buttonEPTU.Size = New-Object Drawing.Size(100,30)
 $buttonEPTU.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest "" #https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/EPTU/SC-UserConfig-Tweaker-TRS.ps1
-    Invoke-Expression $($ScriptFromGitHub.Content)
     $form.Close()
+    Invoke-Expression $($ScriptFromGitHub.Content)
 })
 $form.Controls.Add($buttonEPTU)
 
 $buttonPreview = New-Object Windows.Forms.Button
 $buttonPreview.Text = "4.0_PREVIEW"
 $buttonPreview.Location = New-Object Drawing.Point(10,140)
-$buttonPreview.Size = New-Object Drawing.Size(200,30)
+$buttonPreview.Size = New-Object Drawing.Size(100,30)
 $buttonPreview.Add_Click({
     $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/4.0_PREVIEW-TEST/SC-UserConfig-Tweaker-TRS.ps1
     Invoke-Expression $($ScriptFromGitHub.Content)
@@ -84,4 +84,4 @@ $form.Controls.Add($buttonComingSoon)<#  #>    #>
 [void]$form.ShowDialog()
 
 #$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
-Invoke-Expression $($ScriptFromGitHub.Content)
+#Invoke-Expression $($ScriptFromGitHub.Content)
