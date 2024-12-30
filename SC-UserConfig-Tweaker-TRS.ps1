@@ -1,6 +1,6 @@
 Write-Output "##############################################################################################"
 Write-Output "# Star Citizen User.cfg Optimizer                                                             "
-Write-Output "# Version: 2024.07.11-0333-Alpha"
+Write-Output "# Version: 2024.12.30-0346-Alpha"
 Write-Output "# Created by TheRealSarcasmO                                                                  "
 Write-Output "# https://linktr.ee/TheRealSarcasmO                                                           "
 Write-Output "#                                                                                             "
@@ -392,7 +392,7 @@ function Implement-SystemTweaks {
     $label = New-Object System.Windows.Forms.Label
     $label.Location = New-Object System.Drawing.Point(10,10)
     $label.Size = New-Object System.Drawing.Size(300,30)
-    $label.Text = 'Do you want to implement system tweaks for Star Citizen?'
+    $label.Text = 'XXXXXXXXXXXX DANGEROUS ONLY DO THIS IF YOUR AN EXPERT XXXXXXXXXXXX  Do you want to implement system tweaks for Star Citizen?'
     $form.Controls.Add($label)
 
     # Create Yes button
