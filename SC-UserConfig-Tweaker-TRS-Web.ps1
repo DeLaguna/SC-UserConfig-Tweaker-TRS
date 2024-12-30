@@ -1,6 +1,6 @@
 Write-Output "##############################################################################################################################"
 Write-Output "# Star Citizen User.cfg Optimizer Web                                                                                         "
-Write-Output "# Version: 2024.06.11-1337-RC                                                                                                 "
+Write-Output "# Version: 2024.12.30-0453-RC                                                                                                 "
 Write-Output "# Created by TheRealSarcasmO                                                                                                  "
 Write-Output "# https://linktr.ee/TheRealSarcasmO                                                                                           "
 Write-Output "#                                                                                                                             "
@@ -23,5 +23,72 @@ Start-Transcript -Path $Logfile
 
 Write-Host "Logging started Started: " $Logfile
 
-$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
-Invoke-Expression $($ScriptFromGitHub.Content)
+
+Add-Type -AssemblyName System.Windows.Forms
+
+$form = New-Object Windows.Forms.Form
+$form.Text = "Choose Environment"
+$form.Size = New-Object Drawing.Size(300,200)
+
+$buttonLive = New-Object Windows.Forms.Button
+$buttonLive.Text = "Live"
+$buttonLive.Location = New-Object Drawing.Point(10,20)
+$buttonLive.Size = New-Object Drawing.Size(100,30)
+$buttonLive.Add_Click({
+    Invoke-Expression "irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/Live/SC-UserConfig-Tweaker-TRS.ps1 | iex"
+    $form.Close()
+})
+$form.Controls.Add($buttonLive)
+
+$buttonPTU = New-Object Windows.Forms.Button
+$buttonPTU.Text = "PTU - Coming Soon"
+$buttonPTU.Location = New-Object Drawing.Point(10,60)
+$buttonPTU.Size = New-Object Drawing.Size(100,30)
+$buttonPTU.Add_Click({
+    Invoke-Expression ""#irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/PTU/SC-UserConfig-Tweaker-TRS.ps1 | iex"
+    $form.Close()
+})
+$form.Controls.Add($buttonPTU)
+
+$buttonEPTU = New-Object Windows.Forms.Button
+$buttonEPTU.Text = "EPTU - Coming Soon"
+$buttonEPTU.Location = New-Object Drawing.Point(10,100)
+$buttonEPTU.Size = New-Object Drawing.Size(100,30)
+$buttonEPTU.Add_Click({
+    Invoke-Expression "" #"irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/EPTU/SC-UserConfig-Tweaker-TRS.ps1 | iex"
+    $form.Close()
+})
+$form.Controls.Add($buttonEPTU)
+
+$buttonPreview = New-Object Windows.Forms.Button
+$buttonPreview.Text = "4.0_PREVIEW"
+$buttonPreview.Location = New-Object Drawing.Point(10,140)
+$buttonPreview.Size = New-Object Drawing.Size(100,30)
+$buttonPreview.Add_Click({
+    Invoke-Expression "irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/4.0_PREVIEW/SC-UserConfig-Tweaker-TRS.ps1 | iex"
+    $form.Close()
+})
+$form.Controls.Add($buttonPreview)
+
+# Uncomment the following section when ready to launch
+<# $buttonComingSoon = New-Object Windows.Forms.Button
+$buttonComingSoon.Text = "Coming Soon"
+$buttonComingSoon.Location = New-Object Drawing.Point(10,180)
+$buttonComingSoon.Size = New-Object Drawing.Size(100,30)
+$form.Controls.Add($buttonComingSoon)<#  #>    #>
+
+[void]$form.ShowDialog()
+
+
+
+
+
+
+
+
+
+
+
+
+#$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
+#Invoke-Expression $($ScriptFromGitHub.Content)
