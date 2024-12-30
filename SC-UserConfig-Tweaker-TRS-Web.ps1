@@ -65,7 +65,7 @@ $buttonPreview.Text = "4.0_PREVIEW"
 $buttonPreview.Location = New-Object Drawing.Point(10,140)
 $buttonPreview.Size = New-Object Drawing.Size(100,30)
 $buttonPreview.Add_Click({
-    Invoke-Expression "irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/4.0_PREVIEW/SC-UserConfig-Tweaker-TRS.ps1 | iex"
+    Invoke-Expression "irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/4.0_PREVIEW-TEST/SC-UserConfig-Tweaker-TRS.ps1 | iex"
     $form.Close()
 })
 $form.Controls.Add($buttonPreview)
