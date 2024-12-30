@@ -1,6 +1,6 @@
 Write-Output "##############################################################################################################################"
 Write-Output "# Star Citizen User.cfg Optimizer Web                                                                                         "
-Write-Output "# Version: 2024.06.11-1337-RC                                                                                                 "
+Write-Output "# Version: 2024.12.30-0453-RC                                                                                                   "
 Write-Output "# Created by TheRealSarcasmO                                                                                                  "
 Write-Output "# https://linktr.ee/TheRealSarcasmO                                                                                           "
 Write-Output "#                                                                                                                             "
