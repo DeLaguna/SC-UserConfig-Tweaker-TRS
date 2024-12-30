@@ -89,7 +89,7 @@ if ($currentPolicy -ne 'Unrestricted') {
         }
     }
 }
-
+Write-Host "Please be patient if impatient press Ctrl+c once"
 #################################################
 # Create Shortcut on the desktop
 #
@@ -129,7 +129,7 @@ if ($currentPolicy -ne 'Unrestricted') {
 # ##################################################
 
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
-
+Write-Host $timestamp
 # Function to get system information
 function Get-SystemInfo {
     $computerInfo = Get-CimInstance -ClassName Win32_ComputerSystem
@@ -168,7 +168,7 @@ function Find-RSIPath {
             return $rsiPath
         }
     }
-
+Write-Host $rsiPath
     # If still not found, prompt the user for the installation path
     while ($true) {
         $userInputPath = Read-Host "Unable to find the 'Roberts Space Industries' folder. Please enter the installation path or type 'exit' to cancel"
@@ -448,7 +448,7 @@ function Implement-SystemTweaks {
 
 # Get the RSI path
 $rsiPath = Find-RSIPath
-
+Write-Host  $rsiPath
 # If the RSI path is not found, exit the script
 if (!$rsiPath) {
     Write-Host "Unable to find the RSI path. Exiting the script."
@@ -835,7 +835,7 @@ $enableTopGraphics = Get-TopGraphicalSettings
 # Retrieve system information and user preferences
 $rsiFolderPath = Find-RSIPath
 $liveFolderPath = Join-Path -Path $rsiFolderPath -ChildPath "StarCitizen\4.0_PREVIEW\"
-
+Write-Host $liveFolderPath
 # Retrieve and set system information
 $systemInfo = Get-SystemInfo
 $systemRAMChoice = $($ramInfo.SelectedRAM_MB)
