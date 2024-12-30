@@ -84,4 +84,4 @@ $form.Controls.Add($buttonComingSoon)<#  #>    #>
 [void]$form.ShowDialog()
 
 #$ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
-Invoke-Expression $($ScriptFromGitHub.Content)
+#Invoke-Expression $($ScriptFromGitHub.Content)
