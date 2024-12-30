@@ -392,7 +392,7 @@ function Implement-SystemTweaks {
     $label = New-Object System.Windows.Forms.Label
     $label.Location = New-Object System.Drawing.Point(10,10)
     $label.Size = New-Object System.Drawing.Size(300,30)
-    $label.Text = 'XXXXXXXXXXXX DANGEROUS ONLY DO THIS IF YOUR AN EXPERT XXXXXXXXXXXX  Do you want to implement system tweaks for Star Citizen?'
+    $label.Text = 'XXX DANGEROUS ONLY DO THIS IF YOU ARE AN EXPERT XXX Implement system tweaks for Star Citizen?'
     $form.Controls.Add($label)
 
     # Create Yes button
@@ -1020,6 +1020,7 @@ R_DisplaySessionInfo = $displaySessionInfoSetting
 
 ;--0-- FPS Display
 r_DisplayInfo = $displayInfoSetting
+r_displayFrameGraph = $displayInfoSetting
 
 ;--1-- System RAM size (8GB="8192", 16GB="16384", 32GB="32768", 64GB="65536", 128GB="131072", 256GB="262144")
 sys_budget_sysmem = $systemRAMChoice
