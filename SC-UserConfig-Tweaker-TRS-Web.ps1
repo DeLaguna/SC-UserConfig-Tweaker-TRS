@@ -35,9 +35,10 @@ $buttonLive.Text = "Live"
 $buttonLive.Location = New-Object Drawing.Point(10,20)
 $buttonLive.Size = New-Object Drawing.Size(200,30)
 $buttonLive.Add_Click({
+    $form.Hide() # Hide the form first
     $ScriptFromGitHub = Invoke-WebRequest  https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/main/SC-UserConfig-Tweaker-TRS.ps1
-    $form.Close()
     Invoke-Expression $($ScriptFromGitHub.Content)
+    $form.Close()
 })
 $form.Controls.Add($buttonLive)
 
@@ -46,9 +47,10 @@ $buttonPTU.Text = "PTU - Coming Soon"
 $buttonPTU.Location = New-Object Drawing.Point(10,60)
 $buttonPTU.Size = New-Object Drawing.Size(200,30)
 $buttonPTU.Add_Click({
+    $form.Hide() # Hide the form first
     $ScriptFromGitHub = Invoke-WebRequest #irm https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/PTU/SC-UserConfig-Tweaker-TRS.ps1 | iex"
-    $form.Close()
     Invoke-Expression $($ScriptFromGitHub.Content)
+    $form.Close()
 })
 $form.Controls.Add($buttonPTU)
 
@@ -57,9 +59,10 @@ $buttonEPTU.Text = "EPTU - Coming Soon"
 $buttonEPTU.Location = New-Object Drawing.Point(10,100)
 $buttonEPTU.Size = New-Object Drawing.Size(200,30)
 $buttonEPTU.Add_Click({
+    $form.Hide() # Hide the form first
     $ScriptFromGitHub = Invoke-WebRequest "" #https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/EPTU/SC-UserConfig-Tweaker-TRS.ps1
-    $form.Close()
     Invoke-Expression $($ScriptFromGitHub.Content)
+    $form.Close()
 })
 $form.Controls.Add($buttonEPTU)
 
@@ -68,9 +71,10 @@ $buttonPreview.Text = "4.0_PREVIEW"
 $buttonPreview.Location = New-Object Drawing.Point(10,140)
 $buttonPreview.Size = New-Object Drawing.Size(200,30)
 $buttonPreview.Add_Click({
+    $form.Hide() # Hide the form first
     $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/DeLaguna/SC-UserConfig-Tweaker-TRS/refs/heads/4.0_PREVIEW-TEST/SC-UserConfig-Tweaker-TRS.ps1
-    $form.Close()
     Invoke-Expression $($ScriptFromGitHub.Content)
+    $form.Close()
 })
 $form.Controls.Add($buttonPreview)
 
