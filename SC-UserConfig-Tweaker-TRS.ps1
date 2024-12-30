@@ -31,8 +31,7 @@ DISCLAIMER OF ALL THE THINGS THAT COULD POSSIBLY GO WRONG (BUT PROBABLY WON'T)
 
 Hello, brave user! By running this script, you're embarking on a thrilling adventure filled with system tweaks, 
 performance enhancements, and the occasional existential crisis when you wonder why you're trusting a script you 
-found on the internet. But fear not! This script has been carefully crafted by a team of highly trained meatbag... 
-err... I mean, professional developer.
+found on the internet. But fear not! This script has been carefully crafted by a meatbag... err... I mean, developer.
 
 Now, onto the serious stuff:
 
@@ -47,6 +46,8 @@ you're over there, and there's a whole lot of internet in between.
 
 4. If you don't agree with these terms, or you suddenly feel a sense of impending doom, now would be a good time 
 to press 'Ctrl+C' and walk away. Maybe go for a walk. Read a book. Contemplate the meaning of life.
+
+5. Ideally SC should be installed or symlinked to default directories. If not you should do that now
 
 Do you accept these terms and wish to continue? (y/n)
 "@
